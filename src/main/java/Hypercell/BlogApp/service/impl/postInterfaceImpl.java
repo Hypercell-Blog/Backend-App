@@ -44,8 +44,9 @@ public class postInterfaceImpl implements postInterface {
 
     @Override
     public boolean deletePost(int id) {
-        if(id <0 && !postRepository.existsById(id)){
-            throw new RuntimeException("Post is not found");
+        if(id <0 || !postRepository.existsById(id)){
+            return false;
+//            throw new RuntimeException("Post is not found");
         } else{
             postRepository.deleteById(id);
             return true;
