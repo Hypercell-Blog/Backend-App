@@ -55,10 +55,12 @@ public class postInterfaceImpl implements postInterface {
 
     @Override
     public Post getPost(int id) {
-        if(id <0 && !postRepository.existsById(id)){
+        if(id <0 || !postRepository.existsById(id)){
             throw new RuntimeException("Id is not found");
         } else{
-            return postRepository.findById(id).orElseThrow();
+            Post post = postRepository.findById(id).orElseThrow();
+            post.setUser_name(post.getUser().getName());
+            return post;
         }
     }
 
