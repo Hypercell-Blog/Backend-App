@@ -32,6 +32,7 @@ public class UserController {
     @GetMapping("get/{id}")
     public User getUser(@PathVariable ("id") int id){
         return  userService.getUser(id).orElse(null);
+
     }
 
     @GetMapping("get/all")
