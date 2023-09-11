@@ -9,6 +9,7 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -29,6 +30,9 @@ public class User {
     @JsonFormat(pattern="yyyy-MM-dd")
     @Column(name = "birthdate")
     String  birthdate;
+
+//    @OneToMany(cascade = CascadeType.ALL)
+//    private Set<Post> posts;
 
 }
 

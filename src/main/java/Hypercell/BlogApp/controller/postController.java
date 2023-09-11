@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/post")
+@RequestMapping("api/post")
 public class postController {
 
     private postInterface postinterface;
@@ -15,9 +15,9 @@ public class postController {
         this.postinterface=postinterface;
     }
 
-    @PostMapping("add")
-    public Post addPost(@RequestBody Post post){
-        return postinterface.addPost(post);
+    @PostMapping("add/{user-id}")
+    public Post addPost(@RequestBody Post post,@PathVariable("user-id") int id ){
+        return postinterface.addPost(post, id);
     }
 
     @PutMapping("update/{post-id}")
@@ -35,4 +35,10 @@ public class postController {
     public boolean deletePost(@PathVariable ("post-id") int id ){
         return postinterface.deletePost(id);
     }
+
+    @GetMapping("getPosts/{user-id}")
+    public ResponseEntity getPosts(@PathVariable("user-id") Integer userId) {
+        return new ResponseEntity(postinterface.getPosts(userId), HttpStatus.OK);
+    }
+
 }

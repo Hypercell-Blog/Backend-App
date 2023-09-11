@@ -22,6 +22,7 @@ public class Post {
     @Column(name="post_date")
    private String post_date;
 
-//    @Column(name="user_id")
-//    private int user_id;
+    @JoinColumn(name="user_id")
+    @ManyToOne
+    private User user;
 }
