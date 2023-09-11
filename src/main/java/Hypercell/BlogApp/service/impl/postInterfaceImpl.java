@@ -63,9 +63,17 @@ public class postInterfaceImpl implements postInterface {
 
     @Override
     public List<Post> getPosts(Integer userId) {
-        if(userId != null){
-            return postRepository.findByUserId(userId);
+        if(userRepository.findById(userId).isEmpty()){
+            return null;
+
         }
-        return null;
+        User user = userRepository.findById(userId).orElseThrow();
+        List<Post> result= postRepository.findByUserId(userId);
+        for(int i =  0 ; i < result.size(); i++){
+            result.get(i).setUser_name(user.getName());
+        }
+        return result;
+
+
     }
 }

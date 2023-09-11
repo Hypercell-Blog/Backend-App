@@ -21,10 +21,12 @@ public class Post {
    private String image_url;
     @JsonFormat(pattern = "yyyy-mm-dd")
     @Column(name="post_date")
-   private String post_date;
+   private String post_date;  // this string will be converted to date in the database
 
     @JoinColumn(name="user_id")
     @ManyToOne
     @JsonIgnore
     private User user;
+    @Transient
+    private String user_name;
 }
