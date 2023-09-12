@@ -26,6 +26,10 @@ public class Post {
     @ManyToOne
     @JsonIgnore
     private User user;
+
+    @JoinColumn(name="shared_id")
+    @OneToOne
+    private Post shared_post;
     @Transient
     private String user_name;
 }

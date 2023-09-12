@@ -8,6 +8,7 @@ import Hypercell.BlogApp.service.postInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.Console;
 import java.util.List;
 
 @Service
@@ -27,6 +28,9 @@ public class postInterfaceImpl implements postInterface {
     @Override
     public Post addPost(Post post, Integer id) {
         User user = userRepository.findById(id).orElseThrow();
+        if(post.getShared_post() != null){
+           post.setShared_post(postRepository.findById(post.getShared_post().getShared_post().getId()).orElseThrow());
+        }
 
         post.setUser(user);
         return postRepository.save(post);
