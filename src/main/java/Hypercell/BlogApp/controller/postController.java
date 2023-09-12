@@ -22,7 +22,9 @@ public class postController {
 
     @PutMapping("update/{post-id}")
     public ResponseEntity updatePost( @RequestBody Post post,@PathVariable ("post-id") int id){
-        return new ResponseEntity(postinterface.updatePost(post, id), HttpStatus.ACCEPTED);
+            Post res =postinterface.updatePost(post, id);
+            res.setUser_name(res.getUser().getName());
+        return new ResponseEntity(res, HttpStatus.ACCEPTED);
     }
 
 
