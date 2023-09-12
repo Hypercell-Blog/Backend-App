@@ -1,6 +1,7 @@
 package Hypercell.BlogApp.service;
 
 import Hypercell.BlogApp.model.Post;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -13,5 +14,6 @@ public interface postInterface {
     Post getPost (int id);
 
     List<Post> getPosts(Integer userId);
+
 
 }

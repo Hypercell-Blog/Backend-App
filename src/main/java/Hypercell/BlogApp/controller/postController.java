@@ -1,6 +1,7 @@
 package Hypercell.BlogApp.controller;
 import Hypercell.BlogApp.model.Post;
 import Hypercell.BlogApp.service.postInterface;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +23,7 @@ public class postController {
 
     @PutMapping("update/{post-id}")
     public ResponseEntity updatePost( @RequestBody Post post,@PathVariable ("post-id") int id){
-            Post res =postinterface.updatePost(post, id);
-            res.setUser_name(res.getUser().getName());
-        return new ResponseEntity(res, HttpStatus.ACCEPTED);
+        return new ResponseEntity(postinterface.updatePost(post,id), HttpStatus.ACCEPTED);
     }
 
 
@@ -42,5 +41,6 @@ public class postController {
     public ResponseEntity getPosts(@PathVariable("user-id") Integer userId) {
         return new ResponseEntity(postinterface.getPosts(userId), HttpStatus.OK);
     }
+
 
 }

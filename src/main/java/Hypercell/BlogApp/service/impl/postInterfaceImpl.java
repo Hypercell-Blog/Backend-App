@@ -6,6 +6,10 @@ import Hypercell.BlogApp.repository.PostRepository;
 import Hypercell.BlogApp.repository.UserRepository;
 import Hypercell.BlogApp.service.postInterface;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -58,9 +62,7 @@ public class postInterfaceImpl implements postInterface {
         if(id <0 || !postRepository.existsById(id)){
             throw new RuntimeException("Id is not found");
         } else{
-            Post post = postRepository.findById(id).orElseThrow();
-            post.setUser_name(post.getUser().getName());
-            return post;
+            return postRepository.findById(id).orElseThrow();
         }
     }
 
