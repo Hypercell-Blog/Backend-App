@@ -27,14 +27,13 @@ public class postInterfaceImpl implements postInterface {
     @Override
     public Post addPost(Post post, Integer id) {
         User user = userRepository.findById(id).orElseThrow();
-
         post.setUser(user);
         return postRepository.save(post);
     }
 
     @Override
     public Post updatePost(Post post, int id) {
-        if(id <0 && !postRepository.existsById(id)){
+        if(id <0 || !postRepository.existsById(id)){
             throw new RuntimeException("Post is not found");
         } else{
             post.setId(id);
@@ -46,7 +45,6 @@ public class postInterfaceImpl implements postInterface {
     public boolean deletePost(int id) {
         if(id <0 || !postRepository.existsById(id)){
             return false;
-//            throw new RuntimeException("Post is not found");
         } else{
             postRepository.deleteById(id);
             return true;
