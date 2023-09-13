@@ -11,5 +11,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
 
        // User saveFriend(User friend);
-
+        //void deleteFriend(User friend);
 }

@@ -95,8 +95,12 @@ public class UserServiceImpl implements UserService{
     public boolean deleteFriend(int friendId, int userId) {
        User user=userRepository.findById(userId).orElseThrow(); //get the user with this userId
        User friend=userRepository.findById(friendId).orElseThrow(); //get the friend with this friendId
-        user.getFriends().remove(friend); //remove this friend from the user's list of friends
-        friend.getFriends().remove(user);
+        if (user != null && friend != null){
+            user.getFriends().remove(friend); //remove this friend from the user's list of friends
+            friend.getFriends().remove(user);
+            userRepository.saveAndFlush(friend);
+        }
+
         return true;
     }
 
