@@ -10,15 +10,14 @@ import java.util.List;
 
 @Entity
 @Table(name="reactions")
-@IdClass(Reactions.CompositeKey.class)
 @Data
+@IdClass(Reactions.CompositeKey.class)
 public class Reactions {
-
     @Transient
     @JsonIgnore
 //    @JsonSerialize(using = CustomSerializer.class)
     List<String> emos = new ArrayList<String>();
-    Reactions(){
+    public Reactions(){
         emos.add("love");
         emos.add("like");
     }
@@ -45,7 +44,6 @@ public class Reactions {
     private int post_id;
    @Transient
     private int user_id;
-
 
 
     @Data
