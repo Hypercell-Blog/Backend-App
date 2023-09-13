@@ -66,8 +66,6 @@ public class ReactionsImpl implements ReactionsService {
         }
 
     }
-
-
     @Override
     public List<Reactions> GetPostReactions(Integer postId) {
         return reactionsRepository.findAllByPost(postRepository.findById(postId).orElseThrow());
