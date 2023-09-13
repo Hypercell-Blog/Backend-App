@@ -1,4 +1,5 @@
 package Hypercell.BlogApp.controller;
+import Hypercell.BlogApp.exceptions.GeneralException;
 import Hypercell.BlogApp.model.Post;
 import Hypercell.BlogApp.service.postInterface;
 import org.springframework.http.HttpStatus;
@@ -33,12 +34,12 @@ public class postController {
     }
 
     @DeleteMapping("delete/{post-id}")
-    public boolean deletePost(@PathVariable ("post-id") int id ){
-        return postinterface.deletePost(id);
+    public ResponseEntity deletePost(@PathVariable ("post-id") int id ) throws GeneralException {
+        return new ResponseEntity(postinterface.deletePost(id), HttpStatus.OK);
     }
 
     @GetMapping("getPosts/{user-id}")
-    public ResponseEntity getPosts(@PathVariable("user-id") Integer userId) {
+    public ResponseEntity getPosts(@PathVariable("user-id") Integer userId) throws GeneralException {
         return new ResponseEntity(postinterface.getPosts(userId), HttpStatus.OK);
     }
 

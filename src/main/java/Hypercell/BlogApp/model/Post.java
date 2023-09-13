@@ -17,7 +17,7 @@ public class Post {
     @Column(name="post_desc")
    private String post_desc;
     @Column(name="image_url")
-   private String image_url;
+    private String image_url;
     @JsonFormat(pattern = "yyyy-mm-dd")
     @Column(name="post_date")
    private String post_date;  // this string will be converted to date in the database
@@ -28,8 +28,11 @@ public class Post {
     private User user;
 
     @JoinColumn(name="shared_id")
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Post shared_post;
     @Transient
     private String user_name;
+
+    @Transient
+    Integer shared_post_id;
 }
