@@ -46,7 +46,9 @@ public class ReactionsImpl implements ReactionsService {
         if (post_id < 0 || !postRepository.existsById(post_id) || user_id < 0 || !userRepository.existsById(user_id)) {
             return false;
         }
-        reactionsRepository.deleteById(new Reactions.CompositeKey(user_id, post_id));
+        User user = userRepository.findById(user_id).orElseThrow();
+        Post post = postRepository.findById(post_id).orElseThrow();
+        reactionsRepository.deleteById(new Reactions.CompositeKey(user, post));
         return true;
     }
 

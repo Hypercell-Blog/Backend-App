@@ -1,12 +1,8 @@
 package Hypercell.BlogApp.model;
-
-import Hypercell.BlogApp.model.Serializer.CustomSerializer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,19 +28,22 @@ public class Reactions {
     private String reaction_date;
 
 
+    @JsonIgnore
+    @Id
     @ManyToOne
     @JoinColumn(name="user_id")
     private User user;
+
+    @JsonIgnore
+    @Id
     @ManyToOne
     @JoinColumn (name="post_id")
     private Post post;
 
 
-    @Id
-    @Column(name="post_id")
+   @Transient
     private int post_id;
-    @Id
-    @Column(name="user_id")
+   @Transient
     private int user_id;
 
 
@@ -53,8 +52,8 @@ public class Reactions {
     @AllArgsConstructor
     @Embeddable
     public static class CompositeKey implements Serializable {
-        private int user_id;
-        private int post_id;
+        private User user;
+        private Post post;
         public CompositeKey(){}
     }
 
