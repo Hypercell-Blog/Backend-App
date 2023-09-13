@@ -65,4 +65,20 @@ public class UserController {
     }
 
 
+    @PostMapping("/add/friend")
+    public User addFriend(@RequestParam("user-id") Integer userId,@RequestParam("friend-id") Integer friendId){
+        return userService.addFriend(friendId,userId);
+    }
+
+    @GetMapping("get/friends/{user-id}")
+    public List<User> getFriends(@PathVariable("user-id") Integer userId){
+        List<User> friends=userService.getFriends(userId);
+        return friends;
+    }
+
+    @DeleteMapping("/delete/friend")
+    public boolean deleteFriend(@RequestParam("user-id") Integer userId,@RequestParam("friend-id") Integer friendId){
+        return userService.deleteFriend(friendId,userId);
+    }
+
 }

@@ -17,4 +17,12 @@ public interface UserService {
 
     Response validateUser(String email, String password) throws GeneralException;
 
+    User addFriend(Integer friendId,Integer userId); //add friend to the user with id=userId
+
+    List<User> getFriends(Integer userId); //get friends of user with id=userId
+
+    boolean deleteFriend(int friendId,int userId); //delete the friend with friendId from user with userId
+
+
+
 }

@@ -1,6 +1,8 @@
 package Hypercell.BlogApp.model;
 
+import Hypercell.BlogApp.model.Serializer.CustomUserSerializer;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -9,6 +11,7 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -20,10 +23,13 @@ public class User {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id ;
+
     @Column(name = "name")
     String name ;
+
     @Column(name = "email")
     String email ;
+
     @Column(name = "password")
     String password ;
 
@@ -33,6 +39,11 @@ public class User {
 
 //    @OneToMany(cascade = CascadeType.ALL)
 //    private Set<Post> posts;
+
+    @ManyToMany
+    @JoinTable(name = "friends",joinColumns = @JoinColumn(name = "user_id"),inverseJoinColumns = @JoinColumn(name = "friend_id"))
+    @JsonSerialize(using = CustomUserSerializer.class)
+    private List<User> friends;
 
 }
 
