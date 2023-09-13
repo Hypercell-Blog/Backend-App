@@ -17,6 +17,7 @@ public class postController {
 
     @PostMapping("add/{user-id}")
     public Post addPost(@RequestBody Post post,@PathVariable("user-id") int id ){
+
         return postinterface.addPost(post, id);
     }
 
