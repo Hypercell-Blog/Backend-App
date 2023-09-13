@@ -51,7 +51,7 @@ public class postInterfaceImpl implements postInterface {
 
     @Override
     public Post updatePost(Post post, int id) {
-        if(id <0 && !postRepository.existsById(id)){
+        if(id <0 || !postRepository.existsById(id)){
             throw new RuntimeException("Post is not found");
         } else{
             post.setId(id);
