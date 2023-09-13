@@ -1,5 +1,6 @@
 package Hypercell.BlogApp.controller;
 
+import Hypercell.BlogApp.model.Post;
 import Hypercell.BlogApp.model.Reactions;
 
 import java.util.List;
@@ -15,14 +16,14 @@ public class ReactionsController {
         this.reactionsService=reactionsService;
     }
 
-    @PostMapping("add/{post-id}/{user-id}")
-    public Reactions addReactions(@RequestBody Reactions reactions, @PathVariable("post-id") int post_id,@PathVariable("user-id") int user_id){
-        return reactionsService.AddReaction(reactions,post_id,user_id);
+    @PostMapping("add")
+    public Reactions addReactions(@RequestBody Reactions reactions){
+        return reactionsService.AddReaction(reactions);
     }
 
-    @GetMapping("getPosts")
-    public List<Reactions> getReactions(){
-        return reactionsService.GetPostReactions();
+    @GetMapping("getPostReactions")
+    public List<Reactions> getReactions(@RequestBody Post post){
+        return reactionsService.GetPostReactions(post.getId());
     }
 
     @PutMapping("update/{post-id}/{user-id}")

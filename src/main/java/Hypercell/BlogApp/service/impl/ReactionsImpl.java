@@ -25,16 +25,18 @@ public class ReactionsImpl implements ReactionsService {
     }
 
     @Override
-    public Reactions AddReaction(Reactions reaction, int post_id, int user_id) {
-        String emo= reaction.getEmoji().toLowerCase();
-        if(!reaction.getEmos().contains(emo)){
+    public Reactions AddReaction(Reactions reaction) {
+        User user=userRepository.findById(reaction.getUser_id()).orElseThrow();
+        Post post =postRepository.findById(reaction.getPost_id()).orElseThrow();
+        reaction.setPost(post);
+        reaction.setUser(user);
+        String emo = reaction.getEmoji().toLowerCase();
+        if (!reaction.getEmos().contains(emo)) {
             throw new RuntimeException("INVALID EMOJI");
-        }else {
-            User user = userRepository.findById(user_id).orElseThrow();
-            Post post = postRepository.findById(post_id).orElseThrow();
+        } else {
 
-            reaction.setPost_id(post_id);
-            reaction.setUser_id(user_id);
+
+
             return reactionsRepository.save(reaction);
         }
     }
@@ -50,10 +52,10 @@ public class ReactionsImpl implements ReactionsService {
 
     @Override
     public Reactions UpdateReaction(Reactions reaction, int post_id, int user_id) {
-        String emo= reaction.getEmoji().toLowerCase();
+        String emo = reaction.getEmoji().toLowerCase();
         if (post_id < 0 || !postRepository.existsById(post_id) || user_id < 0 || !userRepository.existsById(user_id) ||
                 !reaction.getEmos().contains(emo)) {
-                throw new RuntimeException("ID IS NOT FOUND");
+            throw new RuntimeException("ID IS NOT FOUND");
 
         } else {
             reaction.setUser_id(user_id);
@@ -63,8 +65,9 @@ public class ReactionsImpl implements ReactionsService {
 
     }
 
+
     @Override
-    public List<Reactions> GetPostReactions() {
-        return reactionsRepository.findAll();
-        }
+    public List<Reactions> GetPostReactions(Integer postId) {
+        return reactionsRepository.findAllByPost(postRepository.findById(postId).orElseThrow());
     }
+}
