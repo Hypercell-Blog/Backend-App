@@ -68,4 +68,41 @@ public class UserServiceImpl implements UserService{
         }
         return new Response("0", user);
     }
+
+    @Override
+    public User addFriend(Integer friendId, Integer userId) {
+        User user =userRepository.findById(userId).orElseThrow(); //get user with id=userId
+        User friend = userRepository.findById(friendId).orElse(null);
+
+        if (user != null && friend != null) {
+            user.getFriends().add(friend); //add to his list of friends 'Friend'
+            userRepository.save(user);
+            friend.getFriends().add(user);
+            userRepository.save(friend);
+        }
+        return friend;
+    }
+
+
+    @Override
+    public List<User> getFriends(Integer userId) {
+        User user=userRepository.findById(userId).orElseThrow();
+        List<User> friends=user.getFriends();
+        return friends;
+    }
+
+    @Override
+    public boolean deleteFriend(Integer friendId, Integer userId) {
+       User user=userRepository.findById(userId).orElseThrow(); //get the user with this userId
+       User friend=userRepository.findById(friendId).orElseThrow(); //get the friend with this friendId
+        if (user != null && friend != null){
+            user.getFriends().remove(friend); //remove this friend from the user's list of friends
+            friend.getFriends().remove(user);
+            userRepository.saveAndFlush(friend);
+        }
+
+        return true;
+    }
+
+
 }
