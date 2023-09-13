@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public boolean deleteFriend(int friendId, int userId) {
+    public boolean deleteFriend(Integer friendId, Integer userId) {
        User user=userRepository.findById(userId).orElseThrow(); //get the user with this userId
        User friend=userRepository.findById(friendId).orElseThrow(); //get the friend with this friendId
         if (user != null && friend != null){
