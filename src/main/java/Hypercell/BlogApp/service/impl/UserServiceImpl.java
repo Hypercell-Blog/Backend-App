@@ -2,6 +2,7 @@ package Hypercell.BlogApp.service.impl;
 
 import Hypercell.BlogApp.exceptions.GeneralException;
 import Hypercell.BlogApp.model.User;
+import Hypercell.BlogApp.model.response.body.LoginResponse;
 import Hypercell.BlogApp.model.response.body.Response;
 import Hypercell.BlogApp.repository.UserRepository;
 import Hypercell.BlogApp.service.UserService;
@@ -10,7 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -22,14 +25,19 @@ public class UserServiceImpl implements UserService{
     private UserRepository userRepository;
 
     @Override
-    public Optional<User> addUser(User user) {
+    public Optional<User> addUser(User user) throws GeneralException {
+
         if(userRepository.findByEmail(user.getEmail()) != null)
-            return Optional.empty();
+            throw new GeneralException("1", "Email Already Exists");
         return Optional.of(userRepository.save(user));
     }
 
     @Override
-    public Optional<User> getUser(int id) {
+    public Optional<User> getUser(int id) throws GeneralException {
+        if(!userRepository.existsById(id))
+        {
+            throw new GeneralException("1", "User Not Found");
+        }
        return Optional.of(userRepository.findById(id).orElseThrow());
     }
 
@@ -56,22 +64,21 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public Response validateUser(String email , String password) throws GeneralException {
-
+    public LoginResponse validateUser(String email , String password) throws GeneralException {
         User user = userRepository.findByEmail(email);
         if(user == null ){
             throw new GeneralException("1", "User Not Found");
-//            return new Response("1", "User Not Found");
         }
         if(!user.getPassword().equals(password)){
-            return new Response("2", "Invalid Credentials");
+            throw new GeneralException("2", "Invalid Credentials");
         }
-        return new Response("0", user);
+
+        return new LoginResponse(user.getId());
     }
 
     @Override
     public User addFriend(Integer friendId, Integer userId) {
-        User user =userRepository.findById(userId).orElseThrow(); //get user with id=userId
+        User user =userRepository.findById(userId).orElseThrow(null); //get user with id=userId
         User friend = userRepository.findById(friendId).orElse(null);
 
         if (user != null && friend != null) {
@@ -102,6 +109,17 @@ public class UserServiceImpl implements UserService{
         }
 
         return true;
+    }
+
+    @Override
+    public boolean isFriend(Integer friendId, Integer userId) throws GeneralException {
+
+        User user=userRepository.findById(userId).orElse(null); //get the user with this userId
+        User friend=userRepository.findById(friendId).orElse(null); //get the friend with this friendId
+       if( user == null || friend == null)
+           throw new GeneralException("1", "User Not Found");
+
+       return user.getFriends().contains(friend);
     }
 
 

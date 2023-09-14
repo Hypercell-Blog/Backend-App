@@ -3,12 +3,9 @@ package Hypercell.BlogApp.controller;
 import Hypercell.BlogApp.exceptions.GeneralException;
 import Hypercell.BlogApp.model.Credentials;
 import Hypercell.BlogApp.model.User;
-import Hypercell.BlogApp.model.response.body.Response;
+import Hypercell.BlogApp.model.response.body.LoginResponse;
 import Hypercell.BlogApp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.ldap.embedded.EmbeddedLdapProperties;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,32 +17,22 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("signup")
-    public ResponseEntity<?> addUser(@RequestBody User user)
-    {
-        User res = userService.addUser(user).orElse(null);
-        if(res != null)
-            return ResponseEntity.ok(res);
-        String msg = "User already exists";
-        return new ResponseEntity<>("User already exists", HttpStatus.OK);
+    @PostMapping("add-user")
+    public Optional<User> addUser(@RequestBody User user) throws GeneralException {
+
+        return  userService.addUser(user);
 
     }
 
     @PostMapping("login")
-    public ResponseEntity<?> validateUser(@RequestBody Credentials userCredential) throws GeneralException {
+    public LoginResponse validateUser(@RequestBody Credentials userCredential) throws GeneralException {
 
-        Response response = userService.validateUser(userCredential.getEmail(), userCredential.getPassword());
-        return new ResponseEntity<>(response, HttpStatus.OK);
-
-//        if(user == null)
-//            return new ResponseEntity<>("Invalid Credentials", HttpStatus.OK);
-//
-//        return ResponseEntity.ok(user);
+        return userService.validateUser(userCredential.getEmail(), userCredential.getPassword());
     }
 
     @PutMapping("update/{id}")
-    public User updateUser(@RequestBody UserController user, @PathVariable("id") int id) {
-        return user.updateUser(user, id);
+    public Optional<User> updateUser(@RequestBody User user, @PathVariable("id") int id) {
+        return userService.updateUser(user, id);
     }
 
     @DeleteMapping("delete/{id}")
@@ -53,8 +40,8 @@ public class UserController {
         return userService.deleteUser(id);
     }
 
-    @GetMapping("get/{id}")
-    public User getUser(@PathVariable ("id") int id){
+    @GetMapping("get-user/{id}")
+    public User getUser(@PathVariable ("id") int id) throws GeneralException {
         return  userService.getUser(id).orElse(null);
 
     }
@@ -65,20 +52,26 @@ public class UserController {
     }
 
 
-    @PostMapping("/add/friend")
-    public User addFriend(@RequestParam("user-id") Integer userId,@RequestParam("friend-id") Integer friendId){
+    @PostMapping("/add-friend")
+    public User addFriend(@RequestParam("userId") Integer userId, @RequestParam("friendId") Integer friendId){
         return userService.addFriend(friendId,userId);
     }
 
-    @GetMapping("get/friends/{user-id}")
-    public List<User> getFriends(@PathVariable("user-id") Integer userId){
+    @GetMapping("get-friends/{userId}")
+    public List<User> getFriends(@PathVariable("userId") Integer userId){
         List<User> friends=userService.getFriends(userId);
         return friends;
     }
 
-    @DeleteMapping("/delete/friend")
-    public boolean deleteFriend(@RequestParam("user-id") Integer userId,@RequestParam("friend-id") Integer friendId){
+    @DeleteMapping("/delete-friend")
+    public boolean deleteFriend(@RequestParam("userId") Integer userId,@RequestParam("friendId") Integer friendId){
         return userService.deleteFriend(friendId,userId);
     }
+
+    @PutMapping("check-friend")
+    public boolean checkFriend(@RequestParam("userId") int id,@RequestParam("friendId") int friendId) throws GeneralException {
+        return userService.isFriend(id,friendId);
+    }
+
 
 }
