@@ -2,10 +2,12 @@ package Hypercell.BlogApp.service.impl;
 
 import Hypercell.BlogApp.exceptions.GeneralException;
 import Hypercell.BlogApp.model.Post;
+import Hypercell.BlogApp.model.PrivacyEnum;
 import Hypercell.BlogApp.model.User;
 import Hypercell.BlogApp.model.response.body.Response;
 import Hypercell.BlogApp.repository.PostRepository;
 import Hypercell.BlogApp.repository.UserRepository;
+import Hypercell.BlogApp.service.UserService;
 import Hypercell.BlogApp.service.postInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,8 @@ public class postInterfaceImpl implements postInterface {
 
     @Autowired
     private UserRepository userRepository;
+//    @Autowired
+    private UserService userService;
 
 
     public postInterfaceImpl(PostRepository postrepository){
@@ -61,7 +65,7 @@ public class postInterfaceImpl implements postInterface {
 
     @Override
     public Response deletePost(int id) throws GeneralException {
-        
+
         if(id <0 || !postRepository.existsById(id)){
             throw new GeneralException("1", "Post Not Found");
         } else {
@@ -77,16 +81,38 @@ public class postInterfaceImpl implements postInterface {
     }
 
     @Override
-    public Post getPost(int id) {
+    public Post getPost(int id, PrivacyEnum privacy,int userId,int friendId) {
         if(id <0 || !postRepository.existsById(id)){
             throw new RuntimeException("Id is not found");
-        } else{
+        }
+        else if (privacy==PrivacyEnum.PUBLIC){
             Post post = postRepository.findById(id).orElseThrow();
             post.setUser_name(post.getUser().getName());
             if(post.getShared_post()!= null){
                 post.getShared_post().setUser_name(post.getShared_post().getUser().getName());
             }
             return post;
+        } else if(privacy==PrivacyEnum.FRIENDS){         //Friends
+            User user=userRepository.findById(userId).orElse(null); //get the user with this userId
+            User friend=userRepository.findById(friendId).orElse(null); //get the friend with this friendId
+            if( user == null || friend == null)
+                throw new RuntimeException("User Not Found");
+
+            boolean friends =user.getFriends().contains(friend);
+            if(friends) {
+                Post post = postRepository.findById(id).orElseThrow();
+                post.setUser_name(post.getUser().getName());
+                if(post.getShared_post()!= null){
+                    post.getShared_post().setUser_name(post.getShared_post().getUser().getName());
+                }
+                return post;
+
+            }else{
+                throw new RuntimeException("Post Is Not Available");
+            }
+
+        }else {                                          //OnlyME
+           throw new RuntimeException("Post Is Not Available");
         }
     }
 

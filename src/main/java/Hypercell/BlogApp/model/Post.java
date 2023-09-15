@@ -35,4 +35,7 @@ public class Post {
 
     @Transient
     Integer shared_post_id;
+
+    @Transient
+    PrivacyEnum privacy;
 }

@@ -1,6 +1,7 @@
 package Hypercell.BlogApp.controller;
 import Hypercell.BlogApp.exceptions.GeneralException;
 import Hypercell.BlogApp.model.Post;
+import Hypercell.BlogApp.model.PrivacyEnum;
 import Hypercell.BlogApp.service.postInterface;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,9 +29,10 @@ public class postController {
     }
 
 
-    @GetMapping("get/{post-id}")
-    public Post getPost(@PathVariable("post-id") int id){
-        return postinterface.getPost(id);
+    @GetMapping("get/{post-id}/{privacy}/{user-id}/{friend-id}")
+    public Post getPost(@PathVariable("post-id") int id, @PathVariable("privacy")PrivacyEnum privacy,@PathVariable("user-id")
+                        int userId,@PathVariable("friend-id") int friendId){
+        return postinterface.getPost(id,privacy,userId,friendId);
     }
 
     @DeleteMapping("delete/{post-id}")
