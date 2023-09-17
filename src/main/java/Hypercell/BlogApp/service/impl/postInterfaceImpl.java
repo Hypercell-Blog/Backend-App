@@ -129,9 +129,9 @@ public class postInterfaceImpl implements postInterface {
 
                 if(result.get(i).getPrivacy()== PrivacyEnum.PUBLIC) {
                 result.get(i).setUser_name(user.getName());
-//                    if (result.get(i).getShared_post() != null) {
-//                        result.get(i).getShared_post().setUser_name(result.get(i).getShared_post().getUser().getName());
-//                    }
+                    if (result.get(i).getShared_post() != null) {
+                        result.get(i).getShared_post().setUser_name(result.get(i).getShared_post().getUser().getName());
+                    }
 //                    finalPost.get(i);
                     finalPost.add(result.get(i));
             }
@@ -152,40 +152,3 @@ public class postInterfaceImpl implements postInterface {
     }
 }
 
-
-
-
-//if(userRepository.findById(userId).isEmpty()){
-//        throw new GeneralException("1","User is not found");
-//        }
-//        User user = userRepository.findById(userId).orElseThrow();
-//        List<Post> allPosts = postRepository.findByUserId(userId);
-//        List<Post> finalResult=new ArrayList<>();
-//        for (int i = 0; i < allPosts.size(); i++) {
-//
-//        if(allPosts.get(i).getPrivacy()== PrivacyEnum.PUBLIC) {
-//        finalResult.get(i).setUser_name(user.getName());
-//        finalResult.add(allPosts.get(i));
-//
-//        if (finalResult.get(i).getShared_post() != null) {
-//        finalResult.get(i).getShared_post().setUser_name(finalResult.get(i).getShared_post().getUser().getName());
-//        }
-//        //return finalResult;
-//        }
-//        else if(allPosts.get(i).getPrivacy()==PrivacyEnum.FRIENDS) {//get the user with this userId
-//        User friend=userRepository.findById(friendId).orElse(null); //get the friend with this friendId
-//        if( user == null || friend == null)
-//        throw new RuntimeException("User Not Found");
-//
-//        boolean friends =user.getFriends().contains(friend);
-//        if(friends){
-//        finalResult.add(allPosts.get(i));
-//        }
-//        //return result;
-//        }
-//        else{
-//        throw new RuntimeException("No Posts Found");
-//        }
-//        }
-//        return finalResult;
-//        }
