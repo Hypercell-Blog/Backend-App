@@ -79,7 +79,7 @@ public class postInterfaceImpl implements postInterface {
 
         }
     }
-
+//hello
     @Override
     public Post getPost(int id,int userId,int friendId)  {
         Post post = postRepository.findById(id).orElseThrow();
