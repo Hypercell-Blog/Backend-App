@@ -81,18 +81,18 @@ public class postInterfaceImpl implements postInterface {
     }
 
     @Override
-    public Post getPost(int id, PrivacyEnum privacy,int userId,int friendId) {
+    public Post getPost(int id,int userId,int friendId)  {
+        Post post = postRepository.findById(id).orElseThrow();
         if(id <0 || !postRepository.existsById(id)){
             throw new RuntimeException("Id is not found");
         }
-        else if (privacy==PrivacyEnum.PUBLIC){
-            Post post = postRepository.findById(id).orElseThrow();
+        else if (post.getPrivacy()==PrivacyEnum.PUBLIC){
             post.setUser_name(post.getUser().getName());
             if(post.getShared_post()!= null){
                 post.getShared_post().setUser_name(post.getShared_post().getUser().getName());
             }
             return post;
-        } else if(privacy==PrivacyEnum.FRIENDS){         //Friends
+        } else if(post.getPrivacy()==PrivacyEnum.FRIENDS){         //Friends
             User user=userRepository.findById(userId).orElse(null); //get the user with this userId
             User friend=userRepository.findById(friendId).orElse(null); //get the friend with this friendId
             if( user == null || friend == null)
@@ -100,7 +100,7 @@ public class postInterfaceImpl implements postInterface {
 
             boolean friends =user.getFriends().contains(friend);
             if(friends) {
-                Post post = postRepository.findById(id).orElseThrow();
+//                Post post = postRepository.findById(id).orElseThrow();
                 post.setUser_name(post.getUser().getName());
                 if(post.getShared_post()!= null){
                     post.getShared_post().setUser_name(post.getShared_post().getUser().getName());
@@ -117,21 +117,33 @@ public class postInterfaceImpl implements postInterface {
     }
 
     @Override
-    public List<Post> getPosts(Integer userId) throws GeneralException {
+    public List<Post> getPosts(Integer userId,Integer friendId) throws GeneralException {
         if(userRepository.findById(userId).isEmpty()){
             throw new GeneralException("1","User is not found");
-
         }
         User user = userRepository.findById(userId).orElseThrow();
-        List<Post> result= postRepository.findByUserId(userId);
-        for(int i =  0 ; i < result.size(); i++){
-            result.get(i).setUser_name(user.getName());
-            if(result.get(i).getShared_post()!= null){
-                result.get(i).getShared_post().setUser_name(result.get(i).getShared_post().getUser().getName());
+        List<Post> result = postRepository.findByUserId(userId);
+            for (int i = 0; i < result.size(); i++) {
+
+                if(result.get(i).getPrivacy()== PrivacyEnum.PUBLIC) {
+                result.get(i).setUser_name(user.getName());
+                    if (result.get(i).getShared_post() != null) {
+                        result.get(i).getShared_post().setUser_name(result.get(i).getShared_post().getUser().getName());
+                    }
+                    return result;
             }
+                else if(result.get(i).getPrivacy()==PrivacyEnum.FRIENDS) {//get the user with this userId
+                    User friend=userRepository.findById(friendId).orElse(null); //get the friend with this friendId
+                    if( user == null || friend == null)
+                        throw new RuntimeException("User Not Found");
+
+                    boolean friends =user.getFriends().contains(friend);
+                    return result;
+                }
+                else{
+                    throw new RuntimeException("No Posts Found");
+                }
         }
-        return result;
-
-
+                return result;
     }
 }

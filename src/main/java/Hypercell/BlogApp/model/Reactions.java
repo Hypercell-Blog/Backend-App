@@ -29,13 +29,13 @@ public class Reactions {
 
     @JsonIgnore
     @Id
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="user_id")
     private User user;
 
     @JsonIgnore
     @Id
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn (name="post_id")
     private Post post;
 

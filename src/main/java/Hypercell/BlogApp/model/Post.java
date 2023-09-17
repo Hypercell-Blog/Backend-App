@@ -36,6 +36,7 @@ public class Post {
     @Transient
     Integer shared_post_id;
 
-    @Transient
-    PrivacyEnum privacy;
+//    @Transient
+    @Column(name="privacy")
+    private PrivacyEnum privacy;
 }

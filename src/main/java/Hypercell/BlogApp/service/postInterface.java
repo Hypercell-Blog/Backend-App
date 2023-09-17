@@ -13,8 +13,8 @@ public interface postInterface {
     Post addPost(Post post, Integer id);
     Post updatePost( Post post,int id);
     Response deletePost(int id) throws GeneralException;
-    Post getPost (int id, PrivacyEnum privacy,int userId,int friendId);
+    Post getPost (int id,int userId,int friendId);
 
-    List<Post> getPosts(Integer userId) throws GeneralException;
+    List<Post> getPosts(Integer userId,Integer friendId) throws GeneralException;
 
 }

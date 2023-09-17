@@ -29,10 +29,10 @@ public class postController {
     }
 
 
-    @GetMapping("get/{post-id}/{privacy}/{user-id}/{friend-id}")
-    public Post getPost(@PathVariable("post-id") int id, @PathVariable("privacy")PrivacyEnum privacy,@PathVariable("user-id")
+    @GetMapping("get/{post-id}/{user-id}/{friend-id}")
+    public Post getPost(@PathVariable("post-id") int id,@PathVariable("user-id")
                         int userId,@PathVariable("friend-id") int friendId){
-        return postinterface.getPost(id,privacy,userId,friendId);
+        return postinterface.getPost(id,userId,friendId);
     }
 
     @DeleteMapping("delete/{post-id}")
@@ -40,9 +40,10 @@ public class postController {
         return new ResponseEntity(postinterface.deletePost(id), HttpStatus.OK);
     }
 
-    @GetMapping("getPosts/{user-id}")
-    public ResponseEntity getPosts(@PathVariable("user-id") Integer userId) throws GeneralException {
-        return new ResponseEntity(postinterface.getPosts(userId), HttpStatus.OK);
+    @GetMapping("getPosts/{user-id}/{friend-id}")
+    public ResponseEntity getPosts(@PathVariable("user-id") Integer userId,
+                                   @PathVariable("friend-id") Integer friendId) throws GeneralException {
+        return new ResponseEntity(postinterface.getPosts(userId,friendId), HttpStatus.OK);
     }
 
 }
