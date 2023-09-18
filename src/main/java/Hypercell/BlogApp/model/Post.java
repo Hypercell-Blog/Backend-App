@@ -1,4 +1,5 @@
 package Hypercell.BlogApp.model;
+import Hypercell.BlogApp.Privacy.Privacy;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -35,4 +36,8 @@ public class Post {
 
     @Transient
     Integer shared_post_id;
+
+    //Privacy
+    @Column(name="privacy")
+    private Privacy privacy;
 }

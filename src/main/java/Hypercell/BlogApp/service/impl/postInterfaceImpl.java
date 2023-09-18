@@ -76,8 +76,8 @@ public class postInterfaceImpl implements postInterface {
         }
     }
 
-    @Override
-    public Post getPost(int id) {
+    /*@Override*/
+    /*public Post getPost(int id) {
         if(id <0 || !postRepository.existsById(id)){
             throw new RuntimeException("Id is not found");
         } else{
@@ -88,6 +88,37 @@ public class postInterfaceImpl implements postInterface {
             }
             return post;
         }
+    }*/
+    @Override
+    public Post getPost(int userId,int postId){
+        if(postId <0 || !postRepository.existsById(postId)) {
+            throw new RuntimeException("Post with this Id is not found");
+        }
+        Post post=postRepository.findById(postId).orElseThrow(); //get post with this postId
+        User postCreator=post.getUser(); //get the owner of the post
+        System.out.println("post ma3ana w el creator ma3ana");
+        switch(post.getPrivacy().getPrivacyVal()){ //check privacy of post
+            case "1": //public
+                post.setUser_name(post.getUser().getName());
+                break;
+            case "2": //private
+                List<User> friends=postCreator.getFriends();
+                if(friends.contains(userRepository.findById(userId))){ //if the user logged in now with userId is a friend of the postCreator
+                    post.setUser_name(post.getUser().getName());
+                    break;
+                }
+                else{
+                    throw new RuntimeException("The creator of this post made it viewable by his list of friends only...");
+                }
+            case"3": //only me
+                if(userId!=postCreator.getId()){ //if the user logged in now tih userId is not the postCreator
+                    throw new RuntimeException("This creator of this post made it viewable to him only..");
+                }
+        }
+        if(post.getShared_post()!= null){
+            post.getShared_post().setUser_name(post.getShared_post().getUser().getName());
+        }
+        return post;
     }
 
     @Override

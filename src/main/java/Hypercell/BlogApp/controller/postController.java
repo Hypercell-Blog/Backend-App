@@ -28,9 +28,10 @@ public class postController {
     }
 
 
-    @GetMapping("get/{post-id}")
-    public Post getPost(@PathVariable("post-id") int id){
-        return postinterface.getPost(id);
+    @GetMapping("get")
+    public Post getPost(@RequestParam("userId") Integer userId, @RequestParam("postId") Integer postId){
+       // return postinterface.getPost(id);
+        return postinterface.getPost(userId,postId);
     }
 
     @DeleteMapping("delete/{post-id}")
