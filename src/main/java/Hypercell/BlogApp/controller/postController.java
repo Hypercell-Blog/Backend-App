@@ -37,7 +37,7 @@ public class postController {
         return postinterface.getPost(id,userId,friendId);   //friendId
     }
 
-    @GetMapping("get")
+    @GetMapping("getPosts")
     public List<Post> getPosts(@RequestParam("user-id")
     int userId) throws GeneralException {
         return postinterface.getPosts(userId);  //friendId
@@ -47,7 +47,7 @@ public class postController {
     @GetMapping("get/{post-id}")
     public Post getPost(@PathVariable("post-id") int id){
 
-        return postinterface.getPost(id);   //friendId
+        return postinterface.getPost(id);
     }
 
 
@@ -56,7 +56,7 @@ public class postController {
         return new ResponseEntity<>(postinterface.deletePost(id), HttpStatus.OK);
     }
 
-    @GetMapping("getPosts")
+    @GetMapping("getFriendPosts")
     public ResponseEntity<?> getPosts(@RequestParam("user-id") Integer userId,
                                    @RequestParam("friend-id") Integer friendId) throws GeneralException {
         return new ResponseEntity<>(postinterface.getPosts(userId,friendId), HttpStatus.OK);
