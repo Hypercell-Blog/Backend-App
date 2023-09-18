@@ -32,7 +32,7 @@ public class postController {
     @GetMapping("get/{post-id}/{user-id}/{friend-id}")
     public Post getPost(@PathVariable("post-id") int id,@PathVariable("user-id")
                         int userId,@PathVariable("friend-id") int friendId){
-        return postinterface.getPost(id,userId,friendId);
+        return postinterface.getPost(id,userId,friendId);   //friendId
     }
 
     @DeleteMapping("delete/{post-id}")
