@@ -43,8 +43,12 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public Optional<User> updateUser(User user, int id) {
-
+if(!userRepository.existsById(id))
+            return Optional.empty();
+    User crnt = userRepository.findById(id).orElseThrow();
         user.setId(id);
+        user.setFriends(crnt.getFriends());
+
         return Optional.of(userRepository.saveAndFlush(user));
     }
 
