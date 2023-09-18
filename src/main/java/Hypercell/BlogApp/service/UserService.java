@@ -6,19 +6,21 @@ import Hypercell.BlogApp.model.response.body.LoginResponse;
 import Hypercell.BlogApp.model.response.body.Response;
 import org.springframework.http.ResponseEntity;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
-    Optional<User> addUser(User user) throws GeneralException;
+    Optional<User> addUser(User user) throws GeneralException, NoSuchAlgorithmException, InvalidKeySpecException;
     Optional<User> getUser(int id) throws GeneralException;
     Optional<User> updateUser(User user, int id);
     boolean deleteUser(int id);
     List<User> getUsers();
 
-    LoginResponse validateUser(String email, String password) throws GeneralException;
+    LoginResponse validateUser(String email, String password) throws GeneralException, NoSuchAlgorithmException, InvalidKeySpecException;
 
-    User addFriend(Integer friendId,Integer userId); //add friend to the user with id=userId
+    User addFriend(Integer friendId,Integer userId) throws GeneralException; //add friend to the user with id=userId
 
     List<User> getFriends(Integer userId); //get friends of user with id=userId
 

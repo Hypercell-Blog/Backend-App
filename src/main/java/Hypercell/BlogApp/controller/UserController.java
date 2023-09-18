@@ -8,6 +8,8 @@ import Hypercell.BlogApp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,14 +20,14 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("add-user")
-    public Optional<User> addUser(@RequestBody User user) throws GeneralException {
+    public Optional<User> addUser(@RequestBody User user) throws GeneralException, NoSuchAlgorithmException, InvalidKeySpecException {
 
         return  userService.addUser(user);
 
     }
 
     @PostMapping("login")
-    public LoginResponse validateUser(@RequestBody Credentials userCredential) throws GeneralException {
+    public LoginResponse validateUser(@RequestBody Credentials userCredential) throws GeneralException, NoSuchAlgorithmException, InvalidKeySpecException {
 
         return userService.validateUser(userCredential.getEmail(), userCredential.getPassword());
     }
@@ -53,7 +55,7 @@ public class UserController {
 
 
     @PostMapping("/add-friend")
-    public User addFriend(@RequestParam("userId") Integer userId, @RequestParam("friendId") Integer friendId){
+    public User addFriend(@RequestParam("userId") Integer userId, @RequestParam("friendId") Integer friendId) throws GeneralException {
         return userService.addFriend(friendId,userId);
     }
 

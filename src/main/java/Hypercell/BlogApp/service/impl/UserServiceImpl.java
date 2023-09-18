@@ -3,18 +3,18 @@ package Hypercell.BlogApp.service.impl;
 import Hypercell.BlogApp.exceptions.GeneralException;
 import Hypercell.BlogApp.model.User;
 import Hypercell.BlogApp.model.response.body.LoginResponse;
-import Hypercell.BlogApp.model.response.body.Response;
 import Hypercell.BlogApp.repository.UserRepository;
 import Hypercell.BlogApp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
+import java.util.*;
 
 
 @Service
@@ -29,6 +29,9 @@ public class UserServiceImpl implements UserService{
 
         if(userRepository.findByEmail(user.getEmail()) != null)
             throw new GeneralException("1", "Email Already Exists");
+        String hashedPassword = hashing(user.getPassword());
+        user.setPassword(hashedPassword);
+
         return Optional.of(userRepository.save(user));
     }
 
@@ -43,8 +46,12 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public Optional<User> updateUser(User user, int id) {
-
+if(!userRepository.existsById(id))
+            return Optional.empty();
+    User crnt = userRepository.findById(id).orElseThrow();
         user.setId(id);
+        user.setFriends(crnt.getFriends());
+
         return Optional.of(userRepository.saveAndFlush(user));
     }
 
@@ -64,29 +71,44 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public LoginResponse validateUser(String email , String password) throws GeneralException {
+    public LoginResponse validateUser(String email , String password) throws GeneralException, NoSuchAlgorithmException, InvalidKeySpecException {
         User user = userRepository.findByEmail(email);
+        password = hashing(password);
+
         if(user == null ){
             throw new GeneralException("1", "User Not Found");
         }
+
         if(!user.getPassword().equals(password)){
             throw new GeneralException("2", "Invalid Credentials");
         }
+
 
         return new LoginResponse(user.getId());
     }
 
     @Override
-    public User addFriend(Integer friendId, Integer userId) {
+    public User addFriend(Integer friendId, Integer userId) throws GeneralException {
         User user =userRepository.findById(userId).orElseThrow(null); //get user with id=userId
+        
+
+        if(user == null)
+            throw new GeneralException("1", "User Not Found");
+        if(user.getId() == friendId)
+            throw new GeneralException("2", "You can't add yourself as a friend");
+
+
         User friend = userRepository.findById(friendId).orElse(null);
 
-        if (user != null && friend != null) {
-            user.getFriends().add(friend); //add to his list of friends 'Friend'
-            userRepository.save(user);
-            friend.getFriends().add(user);
-            userRepository.save(friend);
-        }
+        if (friend == null)
+            throw new GeneralException("3", "Friend Not Found");
+
+
+        user.getFriends().add(friend); //add to his list of friends 'Friend'
+        userRepository.save(user);
+        friend.getFriends().add(user);
+        userRepository.save(friend);
+
         return friend;
     }
 
@@ -121,6 +143,35 @@ public class UserServiceImpl implements UserService{
 
        return user.getFriends().contains(friend);
     }
+
+    String hashPassword(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[16];
+        random.nextBytes(salt);
+
+        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 128);
+        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+        byte[] hash = factory.generateSecret(spec).getEncoded();
+        System.out.println(Base64.getEncoder().encodeToString(hash));
+        return Base64.getEncoder().encodeToString(hash);
+    }
+
+
+    String  hashing(String password){
+        // Getting MIME encoder
+        Base64.Encoder encoder = Base64.getMimeEncoder();
+
+        String eStr = encoder.encodeToString(password.getBytes());
+        return eStr;
+
+
+    }
+
+
+
+
+
+
 
 
 }
