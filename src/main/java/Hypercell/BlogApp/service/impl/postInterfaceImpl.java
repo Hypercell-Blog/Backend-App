@@ -20,7 +20,7 @@ public class postInterfaceImpl implements postInterface {
 
     @Autowired
     private UserRepository userRepository;
-//    @Autowired
+
 
 
 
@@ -149,6 +149,23 @@ public class postInterfaceImpl implements postInterface {
     public Post getPost(int id) {
         return postRepository.findById(id).orElseThrow();
     }
+
+    @Override
+    public List<Post> getPosts(Integer userId) throws GeneralException {
+
+        if(userRepository.findById(userId).isEmpty()){
+            throw new GeneralException("1","User is not found");
+        }
+       List<Post> posts= postRepository.findByUserId(userId);
+        for (Post post : posts) {
+            post.setUser_name(post.getUser().getName());
+            if(post.getShared_post()!= null){
+                post.getShared_post().setUser_name(post.getShared_post().getUser().getName());
+            }
+        }
+        return posts;
+    }
+
 
 
 }

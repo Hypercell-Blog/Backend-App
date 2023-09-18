@@ -2,9 +2,12 @@ package Hypercell.BlogApp.controller;
 import Hypercell.BlogApp.exceptions.GeneralException;
 import Hypercell.BlogApp.model.Post;
 import Hypercell.BlogApp.service.postInterface;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/post")
@@ -28,11 +31,18 @@ public class postController {
     }
 
 
-    @GetMapping("get/{post-id}/{user-id}/{friend-id}")
-    public Post getPost(@PathVariable("post-id") int id,@PathVariable("user-id")
-                        int userId,@PathVariable("friend-id") int friendId) throws GeneralException {
+    @GetMapping("get")
+    public Post getPost(@RequestParam("post-id") int id,@RequestParam("user-id")
+                        int userId,@RequestParam("friend-id") int friendId) throws GeneralException {
         return postinterface.getPost(id,userId,friendId);   //friendId
     }
+
+    @GetMapping("get")
+    public List<Post> getPosts(@RequestParam("user-id")
+    int userId) throws GeneralException {
+        return postinterface.getPosts(userId);  //friendId
+    }
+
 
     @GetMapping("get/{post-id}")
     public Post getPost(@PathVariable("post-id") int id){
@@ -46,9 +56,9 @@ public class postController {
         return new ResponseEntity<>(postinterface.deletePost(id), HttpStatus.OK);
     }
 
-    @GetMapping("getPosts/{user-id}/{friend-id}")
-    public ResponseEntity<?> getPosts(@PathVariable("user-id") Integer userId,
-                                   @PathVariable("friend-id") Integer friendId) throws GeneralException {
+    @GetMapping("getPosts")
+    public ResponseEntity<?> getPosts(@RequestParam("user-id") Integer userId,
+                                   @RequestParam("friend-id") Integer friendId) throws GeneralException {
         return new ResponseEntity<>(postinterface.getPosts(userId,friendId), HttpStatus.OK);
     }
 
