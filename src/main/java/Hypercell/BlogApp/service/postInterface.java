@@ -17,4 +17,6 @@ public interface postInterface {
 
     List<Post> getPosts(Integer userId,Integer friendId) throws GeneralException;
 
+    Post getPost(int id);
+
 }

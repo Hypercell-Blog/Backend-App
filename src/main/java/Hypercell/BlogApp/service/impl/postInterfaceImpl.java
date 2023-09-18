@@ -56,10 +56,14 @@ public class postInterfaceImpl implements postInterface {
 
     @Override
     public Post updatePost(Post post, int id) {
+
         if(id <0 || !postRepository.existsById(id)){
             throw new RuntimeException("Post is not found");
         } else{
+            Post crntPost = postRepository.findById(id).orElseThrow();
             post.setId(id);
+            post.setUser(crntPost.getUser());
+
             return postRepository.saveAndFlush(post);
         }
     }
@@ -150,5 +154,12 @@ public class postInterfaceImpl implements postInterface {
         }
                 return finalPost;
     }
+
+    @Override
+    public Post getPost(int id) {
+        return postRepository.findById(id).orElseThrow();
+    }
+
+
 }
 

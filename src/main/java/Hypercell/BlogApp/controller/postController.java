@@ -35,6 +35,13 @@ public class postController {
         return postinterface.getPost(id,userId,friendId);   //friendId
     }
 
+    @GetMapping("get/{post-id}")
+    public Post getPost(@PathVariable("post-id") int id){
+
+        return postinterface.getPost(id);   //friendId
+    }
+
+
     @DeleteMapping("delete/{post-id}")
     public ResponseEntity deletePost(@PathVariable ("post-id") int id ) throws GeneralException {
         return new ResponseEntity(postinterface.deletePost(id), HttpStatus.OK);
@@ -45,5 +52,7 @@ public class postController {
                                    @PathVariable("friend-id") Integer friendId) throws GeneralException {
         return new ResponseEntity(postinterface.getPosts(userId,friendId), HttpStatus.OK);
     }
+
+
 
 }

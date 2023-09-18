@@ -14,9 +14,9 @@ import java.util.List;
 @Service
 public class ReactionsImpl implements ReactionsService {
 
-    private PostRepository postRepository;
-    private UserRepository userRepository;
-    private ReactionsRepository reactionsRepository;
+    private final PostRepository postRepository;
+    private final UserRepository userRepository;
+    private final ReactionsRepository reactionsRepository;
 
     public ReactionsImpl(PostRepository postRepository, UserRepository userRepository, ReactionsRepository reactionsRepository) {
         this.reactionsRepository = reactionsRepository;
@@ -30,6 +30,7 @@ public class ReactionsImpl implements ReactionsService {
         Post post =postRepository.findById(reaction.getPost_id()).orElseThrow();
         reaction.setPost(post);
         reaction.setUser(user);
+        reaction.setReaction_date(java.time.LocalDate.now().toString());
         String emo = reaction.getEmoji().toLowerCase();
         if (!reaction.getEmos().contains(emo)) {
             throw new RuntimeException("INVALID EMOJI");
