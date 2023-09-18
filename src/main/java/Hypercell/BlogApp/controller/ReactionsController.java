@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/Reactions")
 public class ReactionsController {
-    private ReactionsService reactionsService;
+    private final ReactionsService reactionsService;
     public ReactionsController(ReactionsService reactionsService){
         this.reactionsService=reactionsService;
     }

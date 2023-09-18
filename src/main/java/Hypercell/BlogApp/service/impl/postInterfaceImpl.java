@@ -1,5 +1,4 @@
 package Hypercell.BlogApp.service.impl;
-
 import Hypercell.BlogApp.exceptions.GeneralException;
 import Hypercell.BlogApp.model.Post;
 import Hypercell.BlogApp.model.PrivacyEnum;
@@ -7,24 +6,22 @@ import Hypercell.BlogApp.model.User;
 import Hypercell.BlogApp.model.response.body.Response;
 import Hypercell.BlogApp.repository.PostRepository;
 import Hypercell.BlogApp.repository.UserRepository;
-import Hypercell.BlogApp.service.UserService;
 import Hypercell.BlogApp.service.postInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.Console;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class postInterfaceImpl implements postInterface {
 
-    private PostRepository postRepository;
+    private final PostRepository postRepository;
 
     @Autowired
     private UserRepository userRepository;
 //    @Autowired
-    private UserService userService;
+
 
 
     public postInterfaceImpl(PostRepository postrepository){
@@ -55,10 +52,10 @@ public class postInterfaceImpl implements postInterface {
 
 
     @Override
-    public Post updatePost(Post post, int id) {
+    public Post updatePost(Post post, int id) throws GeneralException {
 
         if(id <0 || !postRepository.existsById(id)){
-            throw new RuntimeException("Post is not found");
+            throw new GeneralException("1","Post is not found");
         } else{
             Post crntPost = postRepository.findById(id).orElseThrow();
             post.setId(id);
@@ -76,9 +73,7 @@ public class postInterfaceImpl implements postInterface {
         } else {
 
             List<Post> posts = postRepository.findAllByShared_post(id);
-            for (int i = 0; i < posts.size(); i++) {
-                postRepository.delete(posts.get(i));
-            }
+            postRepository.deleteAll(posts);
             postRepository.deleteById(id);
             return new Response("0", "Post Deleted Successfully");
 
@@ -86,10 +81,10 @@ public class postInterfaceImpl implements postInterface {
     }
 //hello
     @Override
-    public Post getPost(int id,int userId,int friendId)  {
+    public Post getPost(int id,int userId,int friendId) throws GeneralException {
         Post post = postRepository.findById(id).orElseThrow();
         if(id <0 || !postRepository.existsById(id)){
-            throw new RuntimeException("Id is not found");
+            throw new GeneralException("1","Id is not found");
         }
         else if (post.getPrivacy()==PrivacyEnum.PUBLIC){
             post.setUser_name(post.getUser().getName());
@@ -101,11 +96,11 @@ public class postInterfaceImpl implements postInterface {
             User user=userRepository.findById(userId).orElse(null); //get the user with this userId
             User friend=userRepository.findById(friendId).orElse(null); //get the friend with this friendId
             if( user == null || friend == null)
-                throw new RuntimeException("User Not Found");
+                throw new GeneralException("1","User Not Found");
 
             boolean friends =user.getFriends().contains(friend);
             if(friends) {
-//                Post post = postRepository.findById(id).orElseThrow();
+
                 post.setUser_name(post.getUser().getName());
                 if(post.getShared_post()!= null){
                     post.getShared_post().setUser_name(post.getShared_post().getUser().getName());
@@ -113,11 +108,11 @@ public class postInterfaceImpl implements postInterface {
                 return post;
 
             }else{
-                throw new RuntimeException("Post Is Not Available");
+                throw new GeneralException("1","Post Is Not Available");
             }
 
         }else {                                          //OnlyME
-           throw new RuntimeException("Post Is Not Available");
+           throw new GeneralException("1","Post Is Not Available");
         }
     }
 
@@ -129,28 +124,23 @@ public class postInterfaceImpl implements postInterface {
         User user = userRepository.findById(userId).orElseThrow();
         List<Post> result = postRepository.findByUserId(userId);
         List<Post> finalPost=new ArrayList<>();
-            for (int i = 0; i < result.size(); i++) {
+        for (Post post : result) {
 
-                if(result.get(i).getPrivacy()== PrivacyEnum.PUBLIC) {
-                result.get(i).setUser_name(user.getName());
-                    if (result.get(i).getShared_post() != null) {
-                        result.get(i).getShared_post().setUser_name(result.get(i).getShared_post().getUser().getName());
-                    }
-//                    finalPost.get(i);
-                    finalPost.add(result.get(i));
+            if (post.getPrivacy() == PrivacyEnum.PUBLIC) {
+                post.setUser_name(user.getName());
+                if (post.getShared_post() != null) {
+                    post.getShared_post().setUser_name(post.getShared_post().getUser().getName());
+                }
+                finalPost.add(post);
+            } else if (post.getPrivacy() == PrivacyEnum.FRIENDS) {//get the user with this userId
+                User friend = userRepository.findById(friendId).orElse(null); //get the friend with this friendId
+                if (friend == null)
+                    throw new GeneralException("1","User Not Found");
+                finalPost.add(post);
+
+            } else if (post.getPrivacy() == PrivacyEnum.ONLYME) {
+                continue;
             }
-                else if(result.get(i).getPrivacy()==PrivacyEnum.FRIENDS) {//get the user with this userId
-                    User friend=userRepository.findById(friendId).orElse(null); //get the friend with this friendId
-                    if( user == null || friend == null)
-                        throw new RuntimeException("User Not Found");
-
-                    boolean friends =user.getFriends().contains(friend);
-                    finalPost.add(result.get(i));
-
-                }
-                else if(result.get(i).getPrivacy()==PrivacyEnum.ONLYME){
-                  continue;
-                }
         }
                 return finalPost;
     }

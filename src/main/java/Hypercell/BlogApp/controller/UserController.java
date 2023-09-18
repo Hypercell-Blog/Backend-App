@@ -61,8 +61,7 @@ public class UserController {
 
     @GetMapping("get-friends/{userId}")
     public List<User> getFriends(@PathVariable("userId") Integer userId){
-        List<User> friends=userService.getFriends(userId);
-        return friends;
+        return userService.getFriends(userId);
     }
 
     @DeleteMapping("/delete-friend")

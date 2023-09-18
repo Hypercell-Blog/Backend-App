@@ -10,5 +10,4 @@ public interface AddUserResponse {
     String getPic();
     String getBio();
 
-
 }

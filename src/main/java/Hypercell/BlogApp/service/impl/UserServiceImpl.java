@@ -8,12 +8,6 @@ import Hypercell.BlogApp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
 import java.util.*;
 
 
@@ -71,7 +65,7 @@ if(!userRepository.existsById(id))
     }
 
     @Override
-    public LoginResponse validateUser(String email , String password) throws GeneralException, NoSuchAlgorithmException, InvalidKeySpecException {
+    public LoginResponse validateUser(String email , String password) throws GeneralException{
         User user = userRepository.findByEmail(email);
         password = hashing(password);
 
@@ -116,14 +110,13 @@ if(!userRepository.existsById(id))
     @Override
     public List<User> getFriends(Integer userId) {
         User user=userRepository.findById(userId).orElseThrow();
-        List<User> friends=user.getFriends();
-        return friends;
+        return user.getFriends();
     }
 
     @Override
     public boolean deleteFriend(Integer friendId, Integer userId) {
        User user=userRepository.findById(userId).orElseThrow(); //get the user with this userId
-       User friend=userRepository.findById(friendId).orElseThrow(); //get the friend with this friendId
+        User friend=userRepository.findById(friendId).orElseThrow(); //get the friend with this friendId
         if (user != null && friend != null){
             user.getFriends().remove(friend); //remove this friend from the user's list of friends
             friend.getFriends().remove(user);
@@ -144,25 +137,12 @@ if(!userRepository.existsById(id))
        return user.getFriends().contains(friend);
     }
 
-    String hashPassword(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        SecureRandom random = new SecureRandom();
-        byte[] salt = new byte[16];
-        random.nextBytes(salt);
-
-        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 128);
-        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-        byte[] hash = factory.generateSecret(spec).getEncoded();
-        System.out.println(Base64.getEncoder().encodeToString(hash));
-        return Base64.getEncoder().encodeToString(hash);
-    }
-
 
     String  hashing(String password){
         // Getting MIME encoder
         Base64.Encoder encoder = Base64.getMimeEncoder();
 
-        String eStr = encoder.encodeToString(password.getBytes());
-        return eStr;
+        return encoder.encodeToString(password.getBytes());
 
 
     }

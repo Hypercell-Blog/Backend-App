@@ -54,17 +54,7 @@ public class CommentImpl implements CommentService {
         comm.setPost(postRepository.findById(comment.getPostId()).orElseThrow());
         comm.setUser(userRepository.findById(comment.getUserId()).orElseThrow());
         return commentRepository.save(comm);
-        /*comm.setName(employee.getName());
-        emp.setDOB(employee.getDOB());
-        emp.setAddress(employee.getAddress());
-        emp.setEmail(employee.getEmail());
-        employeeRepository.save(emp);*/
-       /* comm.setContent(comment.getContent());
-        comm.setCommentDate(comment.getCommentDate());
-        comm.setPost(postRepository.findById(comment.getPostId()).orElseThrow());
-        comm.setUser(userRepository.findById(comment.getUserId()).orElseThrow());
-        commentRepository.save(comm);
-        return comm;*/
+
 
     }
 
