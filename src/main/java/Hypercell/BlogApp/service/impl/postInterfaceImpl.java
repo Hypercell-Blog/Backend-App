@@ -73,7 +73,7 @@ public class postInterfaceImpl implements postInterface {
     }
 
     @Override
-    public Response deletePost(int id) throws GeneralException {
+    public boolean deletePost(int id) throws GeneralException {
 
         if(id <0 || !postRepository.existsById(id)){
             throw new GeneralException("1", "Post Not Found");
@@ -82,7 +82,7 @@ public class postInterfaceImpl implements postInterface {
             List<Post> posts = postRepository.findAllByShared_post(id);
             postRepository.deleteAll(posts);
             postRepository.deleteById(id);
-            return new Response("0", "Post Deleted Successfully");
+            return true ;
 
         }
     }
@@ -123,34 +123,34 @@ public class postInterfaceImpl implements postInterface {
         }
     }
 
-    @Override
-    public List<Post> getPosts(Integer userId,Integer friendId) throws GeneralException {
-        if(userRepository.findById(userId).isEmpty()){
-            throw new GeneralException("1","User is not found");
-        }
-        User user = userRepository.findById(userId).orElseThrow();
-        List<Post> result = postRepository.findByUserId(userId);
-        List<Post> finalPost=new ArrayList<>();
-        for (Post post : result) {
-
-            if (post.getPrivacy() == PrivacyEnum.PUBLIC) {
-//                post.setUser_name(user.getName());
-//                if (post.getShared_post() != null) {
-//                    post.getShared_post().setUser_name(post.getShared_post().getUser().getName());
-//                }
-                finalPost.add(post);
-            } else if (post.getPrivacy() == PrivacyEnum.FRIENDS) {//get the user with this userId
-                User friend = userRepository.findById(friendId).orElse(null); //get the friend with this friendId
-                if (friend == null)
-                    throw new GeneralException("1","User Not Found");
-                finalPost.add(post);
-
-            } else if (post.getPrivacy() == PrivacyEnum.ONLYME) {
-                continue;
-            }
-        }
-                return finalPost;
-    }
+//    @Override
+//    public List<Post> getPosts(Integer userId,Integer friendId) throws GeneralException {
+//        if(userRepository.findById(userId).isEmpty()){
+//            throw new GeneralException("1","User is not found");
+//        }
+//        User user = userRepository.findById(userId).orElseThrow();
+//        List<Post> result = postRepository.findByUserId(userId);
+//        List<Post> finalPost=new ArrayList<>();
+//        for (Post post : result) {
+//
+//            if (post.getPrivacy() == PrivacyEnum.PUBLIC) {
+////                post.setUser_name(user.getName());
+////                if (post.getShared_post() != null) {
+////                    post.getShared_post().setUser_name(post.getShared_post().getUser().getName());
+////                }
+//                finalPost.add(post);
+//            } else if (post.getPrivacy() == PrivacyEnum.FRIENDS) {//get the user with this userId
+//                User friend = userRepository.findById(friendId).orElse(null); //get the friend with this friendId
+//                if (friend == null)
+//                    throw new GeneralException("1","User Not Found");
+//                finalPost.add(post);
+//
+//            } else if (post.getPrivacy() == PrivacyEnum.ONLYME) {
+//                continue;
+//            }
+//        }
+//                return finalPost;
+//    }
 
     @Override
     public Post getPost(int id) {
@@ -158,12 +158,12 @@ public class postInterfaceImpl implements postInterface {
     }
 
     @Override
-    public List<Post> posts(Integer userId) throws GeneralException {
+    public List<Post> getPosts(Integer userId,Integer friendId ) throws GeneralException {
 
         if(userRepository.findById(userId).isEmpty()){
             throw new GeneralException("1","User is not found");
         }
-       List<Post> posts= postRepository.findByUserId(userId);
+       List<Post> posts= postRepository.findByUserId(friendId);
         for (Post post : posts) {
 
             if(post.getUser() == null){
