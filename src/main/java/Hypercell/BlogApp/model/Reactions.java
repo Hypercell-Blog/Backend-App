@@ -23,7 +23,7 @@ public class Reactions {
         emos.add("like");
     }
     @Column(name="emoji")
-    private String emoji;
+    private ReactionType type;
 
     @Column(name="reaction_date")
     @JsonFormat(pattern = "yyyy-mm-dd")
@@ -32,13 +32,13 @@ public class Reactions {
 
     @JsonIgnore
     @Id
-    @ManyToOne(cascade = CascadeType.REMOVE, optional = false)
+    @ManyToOne()
     @JoinColumn(name="user_id")
     private User user;
 
     @JsonIgnore
     @Id
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne()
     @JoinColumn (name="post_id")
     private Post post;
 

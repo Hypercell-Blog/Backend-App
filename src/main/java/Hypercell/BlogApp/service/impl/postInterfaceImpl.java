@@ -52,11 +52,11 @@ public class postInterfaceImpl implements postInterface {
         // here if the post is shared post we will get the original post and set it to the shared post
         if(post.getSharedPostId() != null) {
             Post shared_post = postRepository.findById(post.getSharedPostId()).orElseThrow();
-            if (shared_post.getShared_post() != null) {
-                shared_post = shared_post.getShared_post();
+            if (shared_post.getSharedPost() != null) {
+                shared_post = shared_post.getSharedPost();
                 System.out.println("shared post is not null");
             }
-            post.setShared_post(shared_post);
+            post.setSharedPost(shared_post);
         }
         if(post.getCreateAt() == null){
             post.setCreateAt(java.time.LocalDate.now().toString());
@@ -150,18 +150,7 @@ public class postInterfaceImpl implements postInterface {
             if( user == null || friend == null)
                 throw new GeneralException("1","User Not Found");
 
-            boolean friends =user.getFriends().contains(friend);
-            if(friends) {
-
-//                post.setUser_name(post.getUser().getName());
-//                if(post.getShared_post()!= null){
-//                    post.getShared_post().setUser_name(post.getShared_post().getUser().getName());
-//                }
-                return post;
-
-            }else{
-                throw new GeneralException("1","Post Is Not Available");
-            }
+      return post;
 
         }else {                                          //OnlyME
            throw new GeneralException("1","Post Is Not Available");
@@ -233,7 +222,8 @@ public class postInterfaceImpl implements postInterface {
             User crntUser = user.get();
 
             if(reactionsRepository.findById(new Reactions.CompositeKey(crntUser, post)).isPresent()){
-                post.setIsReact(1);
+                Optional<Reactions> reaction = reactionsRepository.findById(new Reactions.CompositeKey(crntUser, post));
+                post.setIsReact(reaction.get().getType().ordinal());
             }
 
             post.setNumberOfReacts(rec.size());
@@ -247,6 +237,9 @@ public class postInterfaceImpl implements postInterface {
 
     @Override
     public List<Post> getAllPosts(int id) throws GeneralException {
+        if(userRepository.findById(id).isEmpty()){
+            throw new GeneralException("1","User is not found");
+        }
 
         List<Post> posts = postRepository.findAll();
         for(Post post: posts){
@@ -267,7 +260,9 @@ public class postInterfaceImpl implements postInterface {
             User crntUser = user.get();
 
             if(reactionsRepository.findById(new Reactions.CompositeKey(crntUser, post)).isPresent()){
-                post.setIsReact(1);
+                Optional<Reactions> reaction = reactionsRepository.findById(new Reactions.CompositeKey(crntUser, post));
+
+                post.setIsReact(reaction.get().getType().ordinal());
             }
 
             post.setNumberOfReacts(rec.size());

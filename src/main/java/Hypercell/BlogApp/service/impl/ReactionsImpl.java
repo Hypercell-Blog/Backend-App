@@ -27,39 +27,42 @@ public class ReactionsImpl implements ReactionsService {
 
     @Override
     public Reactions AddReaction(Reactions reaction) throws GeneralException {
-        System.out.println("here user id");
-        System.out.println(reaction.getUserId());
+        if (reaction.getPostId() < 0 || !postRepository.existsById(reaction.getPostId()) || reaction.getUserId() < 0 || !userRepository.existsById(reaction.getUserId())) {
+            throw new GeneralException("1", "ID IS NOT FOUND");
+        }
+
         User user=userRepository.findById(reaction.getUserId()).orElseThrow();
         Post post =postRepository.findById(reaction.getPostId()).orElseThrow();
         reaction.setPost(post);
         reaction.setUser(user);
         reaction.setReaction_date(java.time.LocalDate.now().toString());
-        String emo = reaction.getEmoji().toLowerCase();
-        if (!reaction.getEmos().contains(emo)) {
-            throw new GeneralException("1", "invalid react");
-        } else {
+
 
             return reactionsRepository.save(reaction);
-        }
+
     }
 
     @Override
-    public Boolean DeleteReaction(int post_id, int user_id) {
+    public Boolean DeleteReaction(int post_id, int user_id) throws GeneralException {
         if (post_id < 0 || !postRepository.existsById(post_id) || user_id < 0 || !userRepository.existsById(user_id)) {
-            return false;
+            throw  new GeneralException("1","ID IS NOT FOUND");
         }
+
         User user = userRepository.findById(user_id).orElseThrow();
         Post post = postRepository.findById(post_id).orElseThrow();
+        if(reactionsRepository.findById(new Reactions.CompositeKey(user, post)).isEmpty()){
+            throw new GeneralException("1","this reaction is not found");
+        }
+
         reactionsRepository.deleteById(new Reactions.CompositeKey(user, post));
         return true;
     }
 
     @Override
-    public Reactions UpdateReaction(Reactions reaction, int post_id, int user_id) {
-        String emo = reaction.getEmoji().toLowerCase();
-        if (post_id < 0 || !postRepository.existsById(post_id) || user_id < 0 || !userRepository.existsById(user_id) ||
-                !reaction.getEmos().contains(emo)) {
-            throw new RuntimeException("ID IS NOT FOUND");
+    public Reactions UpdateReaction(Reactions reaction, int post_id, int user_id) throws GeneralException {
+
+        if (post_id < 0 || !postRepository.existsById(post_id) || user_id < 0 || !userRepository.existsById(user_id) ){
+            throw new GeneralException("1","ID IS NOT FOUND");
 
         } else {
             reaction.setUserId(user_id);
@@ -69,7 +72,10 @@ public class ReactionsImpl implements ReactionsService {
 
     }
     @Override
-    public List<Reactions> GetPostReactions(Integer postId) {
+    public List<Reactions> GetPostReactions(Integer postId) throws GeneralException {
+    if(!postRepository.existsById(postId)){
+            throw new GeneralException("1","ID IS NOT FOUND");
+    }
         return reactionsRepository.findAllByPost(postRepository.findById(postId).orElseThrow());
     }
 }

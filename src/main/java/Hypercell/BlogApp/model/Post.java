@@ -27,12 +27,12 @@ public class Post {
    private String createAt;  // this string will be converted to date in the database
 
     @JoinColumn(name="user_id")
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne()
     private User user;
 
     @JoinColumn(name="shared_id")
-    @OneToOne(cascade = CascadeType.REMOVE)
-    private Post shared_post;
+    @OneToOne()
+    private Post sharedPost;
 
 
     @Transient

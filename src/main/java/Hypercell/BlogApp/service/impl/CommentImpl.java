@@ -1,5 +1,6 @@
 package Hypercell.BlogApp.service.impl;
 
+import Hypercell.BlogApp.exceptions.GeneralException;
 import Hypercell.BlogApp.model.Comment;
 import Hypercell.BlogApp.repository.CommentRepository;
 import Hypercell.BlogApp.repository.PostRepository;
@@ -29,19 +30,22 @@ public class CommentImpl implements CommentService {
     }
 
     @Override
-    public Comment getComment(Integer commentId) {
-        return commentRepository.findById(commentId).orElseThrow(()->new RuntimeException("Wrong comment id entered"));
+    public Comment getComment(Integer commentId) throws GeneralException {
+
+        return commentRepository.findById(commentId).orElseThrow(()->new GeneralException("1","Wrong comment id entered"));
     }
 
     @Override
-    public List<Comment> getCommentByPost(Integer postId) {
+    public List<Comment> getCommentByPost(Integer postId) throws GeneralException {
+        if(!postRepository.existsById(postId))
+            throw new GeneralException("1","Wrong post id entered");
         return commentRepository.findByPost(postRepository.findById(postId).orElseThrow());
 //        return null;
     }
 
     @Override
     public Comment addComment(Comment comment) {
-
+        comment.setCommentDate(String.valueOf(java.time.LocalDate.now()));
         comment.setPost(postRepository.findById(comment.getPostId()).orElseThrow());
         comment.setUser(userRepository.findById(comment.getUserId()).orElseThrow());
         return commentRepository.save(comment);

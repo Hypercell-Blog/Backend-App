@@ -1,10 +1,8 @@
 package Hypercell.BlogApp.controller;
 import Hypercell.BlogApp.exceptions.GeneralException;
 import Hypercell.BlogApp.model.Post;
+import Hypercell.BlogApp.model.response.body.GeneralResponse;
 import Hypercell.BlogApp.service.postInterface;
-import org.springframework.data.repository.query.Param;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -36,7 +34,7 @@ public class postController {
     }
 
     @PutMapping("update/{post-id}/{user-id}")
-    public GeneralResponse<Post> updatePost( @RequestBody Post post,@PathVariable ("post-id") int id, @PathVariable ("user-id") int userId) throws GeneralException {
+    public GeneralResponse<Post> updatePost(@RequestBody Post post, @PathVariable ("post-id") int id, @PathVariable ("user-id") int userId) throws GeneralException {
         if(userId != post.getUser().getId()) {
             throw new GeneralException("1", "invalid user");
         }
