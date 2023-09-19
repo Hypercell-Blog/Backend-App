@@ -101,6 +101,32 @@ public class postController {
 
 
 
+    @PostMapping("upload-image")
+    public String uploadImage(@RequestParam("image") String image,@RequestParam("postId") Integer postId){
+        String imagePath;
+        try{
+            imagePath=postinterface.uploadPicture(image,postId);
+            return imagePath;
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+            return null;
+        }
 
+    }
+
+    @DeleteMapping("delete-image/{postId}")
+    public boolean deleteImage(@PathVariable("postId") Integer postId){
+        boolean isDeleted=false;
+        try{
+            isDeleted=postinterface.deletePicture(postId);
+            return isDeleted;
+        }
+        catch(Exception exception){
+            exception.printStackTrace();
+            return isDeleted;
+        }
+
+    }
 
 }

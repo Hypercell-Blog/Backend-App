@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,6 +30,11 @@ public interface UserService {
 
     boolean isFriend(Integer friendId,Integer userId) throws GeneralException; //check if the user with id=userId is friend with the user with id=friendId
 
+    String uploadPicture(String image,int userId) throws IOException;
+
+    boolean deletePicture(int userId) throws IOException;
+
+    String updatePicture(String image,int userId) throws IOException;
 
 
 }

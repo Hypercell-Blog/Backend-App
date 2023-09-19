@@ -5,6 +5,7 @@ import Hypercell.BlogApp.model.Post;
 import Hypercell.BlogApp.model.PrivacyEnum;
 import Hypercell.BlogApp.model.response.body.Response;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface postInterface {
@@ -23,4 +24,6 @@ public interface postInterface {
 
     List<Post> getAllPosts(int id) throws GeneralException;
 
+    String uploadPicture(String image,int postId) throws IOException;
+    boolean deletePicture(int postId) throws IOException;
 }
