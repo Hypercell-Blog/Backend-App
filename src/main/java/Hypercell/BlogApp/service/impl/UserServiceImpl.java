@@ -6,15 +6,20 @@ import Hypercell.BlogApp.model.response.body.LoginResponse;
 import Hypercell.BlogApp.model.response.body.Response;
 import Hypercell.BlogApp.repository.UserRepository;
 import Hypercell.BlogApp.service.UserService;
+import jakarta.xml.bind.DatatypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 
 @Service
@@ -124,6 +129,59 @@ if(!userRepository.existsById(id))
            throw new GeneralException("1", "User Not Found");
 
        return user.getFriends().contains(friend);
+    }
+
+    @Override
+    public String uploadPicture(String image,int userId) throws IOException {
+        Path path = Paths.get(String.format("Hypercell/Uploads/User/%s", userId));
+        Files.createDirectories(path);
+        path = Paths.get(String.format("%s/%s.txt", path, userId));
+        if (Files.notExists(path))
+            Files.createFile(path);
+        try (FileOutputStream fos = new FileOutputStream(path.toAbsolutePath().toString())) {
+            fos.write(image.getBytes());
+        } catch (Exception ex) {
+            System.out.println("Image cannot be uploaded");
+        }
+        String imagePath=path.toAbsolutePath().toString();
+        User user=userRepository.findById(userId).orElseThrow();
+        user.setPic(imagePath);
+        userRepository.saveAndFlush(user);
+        System.out.println(user.getPic());
+        return imagePath;
+    }
+
+    @Override
+    public boolean deletePicture(int userId) throws IOException {
+        User user=userRepository.findById(userId).orElseThrow();
+        Path path = Paths.get(String.format("Hypercell/Uploads/User/%s", userId));
+        Files.createDirectories(path);
+        path = Paths.get(String.format("%s/%s.txt", path, userId));
+        if(Files.deleteIfExists(path)){
+            user.setPic(null);
+            userRepository.saveAndFlush(user);
+            return true;
+        }
+        System.out.println("File doesn't exist");
+        return false;
+
+    }
+
+    @Override
+    public String updatePicture(String image, int userId) throws IOException {
+        /*User user = userRepository.findById(userId).orElseThrow();
+        Path path = Paths.get(String.format("Hypercell/Uploads/User/%s", userId));
+        Files.createDirectories(path);
+        path = Paths.get(String.format("%s/%s.txt", path, userId));
+        if (Files.notExists(path))
+            Files.createFile(path);
+        try (FileOutputStream fos = new FileOutputStream(path.toAbsolutePath().toString())) {
+            fos.write(image.getBytes());
+        } catch (Exception ex) {
+            System.out.println("Image cannot be uploaded");
+        }
+        String imagePath=path.toAbsolutePath().toString();*/
+        return null;
     }
 
 
