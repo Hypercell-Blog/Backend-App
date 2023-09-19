@@ -28,15 +28,15 @@ public class ReactionsController {
     }
 
     @GetMapping("all-react/{post-id}")
-    public List<Reactions> getReactions(@PathVariable("post-id") int post_id) throws GeneralException {
+    public GeneralResponse<List<Reactions> > getReactions(@PathVariable("post-id") int post_id) throws GeneralException {
 
-        return reactionsService.GetPostReactions(post_id);
+        return new GeneralResponse<>(true,reactionsService.GetPostReactions(post_id));
     }
 
         @PutMapping("update-react/{post-id}/{user-id}")
-        public Reactions updateReaction(@RequestBody Reactions reactions,@PathVariable("post-id") int post_id,@PathVariable("user-id") int user_id) throws GeneralException {
+        public GeneralResponse<Reactions> updateReaction(@RequestBody Reactions reactions,@PathVariable("post-id") int post_id,@PathVariable("user-id") int user_id) throws GeneralException {
 
-            return reactionsService.AddReaction(reactions);
+            return new GeneralResponse<>(true,reactionsService.AddReaction(reactions));
         }
 
     @DeleteMapping("delete-react/{post-id}/{user-id}")
