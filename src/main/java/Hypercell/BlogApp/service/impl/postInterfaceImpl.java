@@ -6,21 +6,17 @@ import Hypercell.BlogApp.repository.CommentRepository;
 import Hypercell.BlogApp.repository.PostRepository;
 import Hypercell.BlogApp.repository.ReactionsRepository;
 import Hypercell.BlogApp.repository.UserRepository;
+import Hypercell.BlogApp.service.UserService;
 import Hypercell.BlogApp.service.postInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.io.File;
-import java.util.ArrayList;
-import java.io.Console;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
 
 @Service
 public class postInterfaceImpl implements postInterface {
@@ -35,6 +31,9 @@ public class postInterfaceImpl implements postInterface {
 
     @Autowired
     private CommentRepository commentRepository;
+
+    @Autowired
+    private UserService userService;
 
 
 
@@ -132,60 +131,6 @@ public class postInterfaceImpl implements postInterface {
     }
 
 
-    @Override
-    public Post getPost(int id,int userId,int friendId) throws GeneralException {
-        Post post = postRepository.findById(id).orElseThrow();
-        if(id <0 || !postRepository.existsById(id)){
-            throw new GeneralException("1","Id is not found");
-        }
-        else if (post.getPrivacy()==PrivacyEnum.PUBLIC){
-//            post.setUser_name(post.getUser().getName());
-//            if(post.getShared_post()!= null){
-//                post.getShared_post().setUser_name(post.getShared_post().getUser().getName());
-//            }
-            return post;
-        } else if(post.getPrivacy()==PrivacyEnum.FRIENDS){         //Friends
-            User user=userRepository.findById(userId).orElse(null); //get the user with this userId
-            User friend=userRepository.findById(friendId).orElse(null); //get the friend with this friendId
-            if( user == null || friend == null)
-                throw new GeneralException("1","User Not Found");
-
-      return post;
-
-        }else {                                          //OnlyME
-           throw new GeneralException("1","Post Is Not Available");
-        }
-    }
-
-//    @Override
-//    public List<Post> getPosts(Integer userId,Integer friendId) throws GeneralException {
-//        if(userRepository.findById(userId).isEmpty()){
-//            throw new GeneralException("1","User is not found");
-//        }
-//        User user = userRepository.findById(userId).orElseThrow();
-//        List<Post> result = postRepository.findByUserId(userId);
-//        List<Post> finalPost=new ArrayList<>();
-//        for (Post post : result) {
-//
-//            if (post.getPrivacy() == PrivacyEnum.PUBLIC) {
-////                post.setUser_name(user.getName());
-////                if (post.getShared_post() != null) {
-////                    post.getShared_post().setUser_name(post.getShared_post().getUser().getName());
-////                }
-//                finalPost.add(post);
-//            } else if (post.getPrivacy() == PrivacyEnum.FRIENDS) {//get the user with this userId
-//                User friend = userRepository.findById(friendId).orElse(null); //get the friend with this friendId
-//                if (friend == null)
-//                    throw new GeneralException("1","User Not Found");
-//                finalPost.add(post);
-//
-//            } else if (post.getPrivacy() == PrivacyEnum.ONLYME) {
-//                continue;
-//            }
-//        }
-//                return finalPost;
-//    }
-
 
     @Override
     public Post getPost(int id) {
@@ -202,19 +147,22 @@ public class postInterfaceImpl implements postInterface {
         if(userRepository.findById(userId).isEmpty()){
             throw new GeneralException("1","User is not found");
         }
+        Map<Integer, String> userImages  = new HashMap<>();
        List<Post> posts= postRepository.findByUserId(friendId);
         for (Post post : posts) {
             if(post.getImage() != null){
-                System.out.println("here image");
-                System.out.println(post.getImage());
                 post.setImage(getImage(post));
             }
-            if(post.getUser() == null){
-                continue;
+            if(post.getImage() != null){
+                if(userImages.get(post.getUser().getId()) == null){
+                    userImages.put(post.getUser().getId(),getImage(post.getUser()))  ;
+                }
+                post.setImage(userImages.get(post.getUser().getId()));
             }
-//            if(post.getUser().getPic() != null){
-//                post.getUser().setPic(getImage(post.getUser()));
-//            }
+            if(post.getUser().getPic() != null){
+
+                post.getUser().setPic(getImage(post.getUser()));
+            }
 
 
             List<Reactions> rec = reactionsRepository.findAllByPost(post);
@@ -235,24 +183,33 @@ public class postInterfaceImpl implements postInterface {
         return posts;
     }
 
+
     @Override
     public List<Post> getAllPosts(int id) throws GeneralException {
         if(userRepository.findById(id).isEmpty()){
             throw new GeneralException("1","User is not found");
         }
+        Map<Integer, String> userImages  = new HashMap<>();
+
 
         List<Post> posts = postRepository.findAll();
         for(Post post: posts){
 
             if(post.getImage() != null){
-                post.setImage(getImage(post));
+                if(userImages.get(post.getUser().getId()) == null){
+                    userImages.put(post.getUser().getId(),getImage(post.getUser()))  ;
+                }
+                post.setImage(userImages.get(post.getUser().getId()));
+            }
+            if(post.getUser().getPic() != null){
+
+                post.getUser().setPic(getImage(post.getUser()));
             }
 
-            if(post.getUser() == null){
-                continue;
-            }
-//            if(post.getUser().getPic() != null){
-//                post.getUser().setPic(getImage(post.getUser()));
+//            if(post.getSharedPost() != null){
+//                if(post.getSharedPost().getImage() != null){
+//                    post.getSharedPost().setImage(getImage(post.getSharedPost()));
+//                }
 //            }
 
             List<Reactions> rec = reactionsRepository.findAllByPost(post);
@@ -325,51 +282,64 @@ public class postInterfaceImpl implements postInterface {
 
 
 
+
+
+
+
+
+
+
+//    @Override
+//    public Post getPost(int id,int userId,int friendId) throws GeneralException {
+//        Post post = postRepository.findById(id).orElseThrow();
+//        if(id <0 || !postRepository.existsById(id)){
+//            throw new GeneralException("1","Id is not found");
+//        }
+//        else if (post.getPrivacy()==PrivacyEnum.PUBLIC){
+////            post.setUser_name(post.getUser().getName());
+////            if(post.getShared_post()!= null){
+////                post.getShared_post().setUser_name(post.getShared_post().getUser().getName());
+////            }
+//            return post;
+//        } else if(post.getPrivacy()==PrivacyEnum.FRIENDS){         //Friends
+//            User user=userRepository.findById(userId).orElse(null); //get the user with this userId
+//            User friend=userRepository.findById(friendId).orElse(null); //get the friend with this friendId
+//            if( user == null || friend == null)
+//                throw new GeneralException("1","User Not Found");
+//
+//      return post;
+//
+//        }else {                                          //OnlyME
+//           throw new GeneralException("1","Post Is Not Available");
+//        }
+//    }
+
+//    @Override
+//    public List<Post> getPosts(Integer userId,Integer friendId) throws GeneralException {
 //        if(userRepository.findById(userId).isEmpty()){
 //            throw new GeneralException("1","User is not found");
 //        }
-//        Optional<User> crntUser = userRepository.findById(userId);
-//        User user = crntUser.get();
+//        User user = userRepository.findById(userId).orElseThrow();
+//        List<Post> result = postRepository.findByUserId(userId);
+//        List<Post> finalPost=new ArrayList<>();
+//        for (Post post : result) {
 //
-//        List<Post> posts = postRepository.findAll();
-//        if(posts.isEmpty()){
-//            return posts;
-//        }
-//        for(Post post : posts){
-//            if(post.getUser() == null){
+//            if (post.getPrivacy() == PrivacyEnum.PUBLIC) {
+////                post.setUser_name(user.getName());
+////                if (post.getShared_post() != null) {
+////                    post.getShared_post().setUser_name(post.getShared_post().getUser().getName());
+////                }
+//                finalPost.add(post);
+//            } else if (post.getPrivacy() == PrivacyEnum.FRIENDS) {//get the user with this userId
+//                User friend = userRepository.findById(friendId).orElse(null); //get the friend with this friendId
+//                if (friend == null)
+//                    throw new GeneralException("1","User Not Found");
+//                finalPost.add(post);
+//
+//            } else if (post.getPrivacy() == PrivacyEnum.ONLYME) {
 //                continue;
 //            }
-//            List<Reactions> rec = reactionsRepository.findAllByPost(post);
-//
-//            if(reactionsRepository.findById(new Reactions.CompositeKey(user, post)).isPresent()){
-//                post.setIsReactedByMe(1);
-//            }
-//
-//            post.setNumberOfReacts(rec.size());
-//            List<Comment> comments = commentRepository.findByPost(post);
-//            post.setNumberOfComments(comments.size());
-//            List<User> friends = post.getUser().getFriends();
-//
-//
-//            if(friends!= null)
-//            {
-//                if ((post.getPrivacy() == PrivacyEnum.FRIENDS)) {
-//                    if (!friends.contains(crntUser)) {
-//                        posts.remove(post);
-//                    }
-//                } else if (post.getPrivacy() == PrivacyEnum.ONLYME) {
-//                    posts.remove(post);
-//
-//                }
-//            }
-//            else{
-//                if(post.getPrivacy() != PrivacyEnum.PUBLIC){
-//                    posts.remove(post);
-//
-//                }
-//            }
-//
-//
 //        }
-//        return posts;
+//                return finalPost;
+//    }
 

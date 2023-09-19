@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public Optional<User> getUser(int id) throws GeneralException {
+    public User getUser(int id) throws GeneralException {
         if(!userRepository.existsById(id))
         {
             throw new GeneralException("1", "User Not Found");
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService{
 
         if(user.getPic() != null)
          user.setPic(getImage(user));
-       return Optional.of(user);
+       return user;
     }
 
     String getImage(User user){

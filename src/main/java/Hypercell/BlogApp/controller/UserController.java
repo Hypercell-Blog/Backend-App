@@ -48,7 +48,7 @@ public class UserController {
 
     @GetMapping("get-user/{id}")
     public User getUser(@PathVariable ("id") int id) throws GeneralException {
-        return  userService.getUser(id).orElse(null);
+        return  userService.getUser(id);
 
     }
 

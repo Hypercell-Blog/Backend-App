@@ -14,7 +14,7 @@ public interface postInterface {
     Post addPost(Post post, Integer id);
     Post updatePost( Post post,int id) throws GeneralException;
     boolean deletePost(int id) throws GeneralException;
-    Post getPost (int id,int userId,int friendId) throws GeneralException;  //friendId
+//    Post getPost (int id,int userId,int friendId) throws GeneralException;  //friendId
 
     List<Post> getPosts(Integer userId,Integer friendId) throws GeneralException;
 

@@ -15,7 +15,7 @@ import java.util.Optional;
 
 public interface UserService {
     Optional<User> addUser(User user) throws GeneralException, NoSuchAlgorithmException, InvalidKeySpecException;
-    Optional<User> getUser(int id) throws GeneralException;
+    User getUser(int id) throws GeneralException;
     Optional<User> updateUser(User user, int id);
     boolean deleteUser(int id);
     List<User> getUsers();
