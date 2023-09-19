@@ -44,20 +44,40 @@ public class Reactions {
 
 
    @Transient
-    private int post_id;
+    private int postId;
    @Transient
-    private int user_id;
+    private int userId;
 
 
     @Data
-    @AllArgsConstructor
+
     @Embeddable
     public static class CompositeKey implements Serializable {
         private User user;
         private Post post;
         public CompositeKey(){}
+
+        public CompositeKey(User user, Post post) {
+            this.user = user;
+            this.post = post;
+        }
     }
 
-
+    // return the whole user object
+    // 1=>like 2=>love
 
 }
+
+
+/*
+* export interface APIResponse {
+  success: boolean,
+  data:any,
+  messages:string[],
+  pageNumber?:number,
+  totalPages?:number,
+  itemsPerPage?:number
+}
+*
+*
+* */

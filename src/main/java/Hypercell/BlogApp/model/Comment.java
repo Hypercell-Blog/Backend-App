@@ -44,6 +44,8 @@ public class Comment {
     @Transient
     private int userId;
 
+    // return the whole user object
+
 
 
 }

@@ -1,5 +1,6 @@
 package Hypercell.BlogApp.controller;
 
+import Hypercell.BlogApp.exceptions.GeneralException;
 import Hypercell.BlogApp.model.Post;
 import Hypercell.BlogApp.model.Reactions;
 
@@ -17,7 +18,7 @@ public class ReactionsController {
     }
 
     @PostMapping("add")
-    public Reactions addReactions(@RequestBody Reactions reactions){
+    public Reactions addReactions(@RequestBody Reactions reactions) throws GeneralException {
         return reactionsService.AddReaction(reactions);
     }
 

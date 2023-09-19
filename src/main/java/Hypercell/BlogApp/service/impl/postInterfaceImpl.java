@@ -1,10 +1,10 @@
 package Hypercell.BlogApp.service.impl;
 import Hypercell.BlogApp.exceptions.GeneralException;
-import Hypercell.BlogApp.model.Post;
-import Hypercell.BlogApp.model.PrivacyEnum;
-import Hypercell.BlogApp.model.User;
+import Hypercell.BlogApp.model.*;
 import Hypercell.BlogApp.model.response.body.Response;
+import Hypercell.BlogApp.repository.CommentRepository;
 import Hypercell.BlogApp.repository.PostRepository;
+import Hypercell.BlogApp.repository.ReactionsRepository;
 import Hypercell.BlogApp.repository.UserRepository;
 import Hypercell.BlogApp.service.postInterface;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class postInterfaceImpl implements postInterface {
@@ -20,6 +21,12 @@ public class postInterfaceImpl implements postInterface {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ReactionsRepository reactionsRepository;
+
+    @Autowired
+    private CommentRepository commentRepository;
 
 
 
@@ -34,16 +41,16 @@ public class postInterfaceImpl implements postInterface {
         User user = userRepository.findById(id).orElseThrow();
 
         // here if the post is shared post we will get the original post and set it to the shared post
-        if(post.getShared_post_id() != null) {
-            Post shared_post = postRepository.findById(post.getShared_post_id()).orElseThrow();
+        if(post.getSharedPostId() != null) {
+            Post shared_post = postRepository.findById(post.getSharedPostId()).orElseThrow();
             if (shared_post.getShared_post() != null) {
                 shared_post = shared_post.getShared_post();
                 System.out.println("shared post is not null");
             }
             post.setShared_post(shared_post);
         }
-        if(post.getPost_date() == null){
-            post.setPost_date(java.time.LocalDate.now().toString());
+        if(post.getCreateAt() == null){
+            post.setCreateAt(java.time.LocalDate.now().toString());
         }
 
         post.setUser(user);
@@ -87,10 +94,10 @@ public class postInterfaceImpl implements postInterface {
             throw new GeneralException("1","Id is not found");
         }
         else if (post.getPrivacy()==PrivacyEnum.PUBLIC){
-            post.setUser_name(post.getUser().getName());
-            if(post.getShared_post()!= null){
-                post.getShared_post().setUser_name(post.getShared_post().getUser().getName());
-            }
+//            post.setUser_name(post.getUser().getName());
+//            if(post.getShared_post()!= null){
+//                post.getShared_post().setUser_name(post.getShared_post().getUser().getName());
+//            }
             return post;
         } else if(post.getPrivacy()==PrivacyEnum.FRIENDS){         //Friends
             User user=userRepository.findById(userId).orElse(null); //get the user with this userId
@@ -101,10 +108,10 @@ public class postInterfaceImpl implements postInterface {
             boolean friends =user.getFriends().contains(friend);
             if(friends) {
 
-                post.setUser_name(post.getUser().getName());
-                if(post.getShared_post()!= null){
-                    post.getShared_post().setUser_name(post.getShared_post().getUser().getName());
-                }
+//                post.setUser_name(post.getUser().getName());
+//                if(post.getShared_post()!= null){
+//                    post.getShared_post().setUser_name(post.getShared_post().getUser().getName());
+//                }
                 return post;
 
             }else{
@@ -127,10 +134,10 @@ public class postInterfaceImpl implements postInterface {
         for (Post post : result) {
 
             if (post.getPrivacy() == PrivacyEnum.PUBLIC) {
-                post.setUser_name(user.getName());
-                if (post.getShared_post() != null) {
-                    post.getShared_post().setUser_name(post.getShared_post().getUser().getName());
-                }
+//                post.setUser_name(user.getName());
+//                if (post.getShared_post() != null) {
+//                    post.getShared_post().setUser_name(post.getShared_post().getUser().getName());
+//                }
                 finalPost.add(post);
             } else if (post.getPrivacy() == PrivacyEnum.FRIENDS) {//get the user with this userId
                 User friend = userRepository.findById(friendId).orElse(null); //get the friend with this friendId
@@ -151,21 +158,110 @@ public class postInterfaceImpl implements postInterface {
     }
 
     @Override
-    public List<Post> getPosts(Integer userId) throws GeneralException {
+    public List<Post> posts(Integer userId) throws GeneralException {
 
         if(userRepository.findById(userId).isEmpty()){
             throw new GeneralException("1","User is not found");
         }
        List<Post> posts= postRepository.findByUserId(userId);
         for (Post post : posts) {
-            post.setUser_name(post.getUser().getName());
-            if(post.getShared_post()!= null){
-                post.getShared_post().setUser_name(post.getShared_post().getUser().getName());
+
+            if(post.getUser() == null){
+                continue;
             }
+            List<Reactions> rec = reactionsRepository.findAllByPost(post);
+            Optional<User> user = userRepository.findById(userId);
+            User crntUser = user.get();
+
+            if(reactionsRepository.findById(new Reactions.CompositeKey(crntUser, post)).isPresent()){
+                post.setIsReact(1);
+            }
+
+            post.setNumberOfReacts(rec.size());
+            List<Comment> comments = commentRepository.findByPost(post);
+            post.setNumberOfComments(comments.size());
+
+
         }
         return posts;
     }
 
+    @Override
+    public List<Post> getAllPosts(int id) throws GeneralException {
+
+        List<Post> posts = postRepository.findAll();
+        for(Post post: posts){
+            if(post.getUser() == null){
+                continue;
+            }
+            List<Reactions> rec = reactionsRepository.findAllByPost(post);
+            Optional<User> user = userRepository.findById(id);
+            User crntUser = user.get();
+
+            if(reactionsRepository.findById(new Reactions.CompositeKey(crntUser, post)).isPresent()){
+                post.setIsReact(1);
+            }
+
+            post.setNumberOfReacts(rec.size());
+            List<Comment> comments = commentRepository.findByPost(post);
+            post.setNumberOfComments(comments.size());
+
+
+
+        }
+        return posts;
+
+
+
+//        if(userRepository.findById(userId).isEmpty()){
+//            throw new GeneralException("1","User is not found");
+//        }
+//        Optional<User> crntUser = userRepository.findById(userId);
+//        User user = crntUser.get();
+//
+//        List<Post> posts = postRepository.findAll();
+//        if(posts.isEmpty()){
+//            return posts;
+//        }
+//        for(Post post : posts){
+//            if(post.getUser() == null){
+//                continue;
+//            }
+//            List<Reactions> rec = reactionsRepository.findAllByPost(post);
+//
+//            if(reactionsRepository.findById(new Reactions.CompositeKey(user, post)).isPresent()){
+//                post.setIsReactedByMe(1);
+//            }
+//
+//            post.setNumberOfReacts(rec.size());
+//            List<Comment> comments = commentRepository.findByPost(post);
+//            post.setNumberOfComments(comments.size());
+//            List<User> friends = post.getUser().getFriends();
+//
+//
+//            if(friends!= null)
+//            {
+//                if ((post.getPrivacy() == PrivacyEnum.FRIENDS)) {
+//                    if (!friends.contains(crntUser)) {
+//                        posts.remove(post);
+//                    }
+//                } else if (post.getPrivacy() == PrivacyEnum.ONLYME) {
+//                    posts.remove(post);
+//
+//                }
+//            }
+//            else{
+//                if(post.getPrivacy() != PrivacyEnum.PUBLIC){
+//                    posts.remove(post);
+//
+//                }
+//            }
+//
+//
+//        }
+//        return posts;
+
+    }
 
 
 }

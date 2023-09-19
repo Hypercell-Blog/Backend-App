@@ -14,33 +14,47 @@ public class Post {
     private int id;
 
     @Column(name="post_title")
-   private String post_title;
+   private String title;
 
     @Column(name="post_desc")
-   private String post_desc;
+   private String content;
 
     @Column(name="image_url")
-    private String image_url;
+    private String image;
 
     @JsonFormat(pattern = "yyyy-mm-dd")
     @Column(name="post_date")
-   private String post_date;  // this string will be converted to date in the database
+   private String createAt;  // this string will be converted to date in the database
 
     @JoinColumn(name="user_id")
     @ManyToOne
-    @JsonIgnore
     private User user;
 
     @JoinColumn(name="shared_id")
     @OneToOne(cascade = CascadeType.ALL)
     private Post shared_post;
-    @Transient
-    private String user_name;
+
 
     @Transient
-    Integer shared_post_id;
+    Integer sharedPostId;
 
 //    @Transient
-    @Column(name="privacy")
+    @Column(name="privacy") // canceled
     private PrivacyEnum privacy;
+
+
+    // numberOfReacts
+//
+    @Transient
+    Integer numberOfComments;
+
+    @Transient
+    Integer numberOfReacts;
+
+    @Transient
+    Integer isReact;
+
+    // numberOfComments
+    // isReactedByMe / friend 0=>noReact 1=>love 2=>like
+    // return the whole user object
 }

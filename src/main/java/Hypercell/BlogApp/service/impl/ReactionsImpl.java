@@ -1,5 +1,6 @@
 package Hypercell.BlogApp.service.impl;
 
+import Hypercell.BlogApp.exceptions.GeneralException;
 import Hypercell.BlogApp.model.Post;
 import Hypercell.BlogApp.model.Reactions;
 import Hypercell.BlogApp.model.User;
@@ -25,18 +26,18 @@ public class ReactionsImpl implements ReactionsService {
     }
 
     @Override
-    public Reactions AddReaction(Reactions reaction) {
-        User user=userRepository.findById(reaction.getUser_id()).orElseThrow();
-        Post post =postRepository.findById(reaction.getPost_id()).orElseThrow();
+    public Reactions AddReaction(Reactions reaction) throws GeneralException {
+        System.out.println("here user id");
+        System.out.println(reaction.getUserId());
+        User user=userRepository.findById(reaction.getUserId()).orElseThrow();
+        Post post =postRepository.findById(reaction.getPostId()).orElseThrow();
         reaction.setPost(post);
         reaction.setUser(user);
         reaction.setReaction_date(java.time.LocalDate.now().toString());
         String emo = reaction.getEmoji().toLowerCase();
         if (!reaction.getEmos().contains(emo)) {
-            throw new RuntimeException("INVALID EMOJI");
+            throw new GeneralException("1", "invalid react");
         } else {
-
-
 
             return reactionsRepository.save(reaction);
         }
@@ -61,8 +62,8 @@ public class ReactionsImpl implements ReactionsService {
             throw new RuntimeException("ID IS NOT FOUND");
 
         } else {
-            reaction.setUser_id(user_id);
-            reaction.setPost_id(post_id);
+            reaction.setUserId(user_id);
+            reaction.setPostId(post_id);
             return reactionsRepository.saveAndFlush(reaction);
         }
 

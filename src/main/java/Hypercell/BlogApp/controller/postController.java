@@ -19,7 +19,7 @@ public class postController {
         this.postinterface=postinterface;
     }
 
-    @PostMapping("add/{user-id}")
+    @PostMapping("add-post{user-id}")
     public Post addPost(@RequestBody Post post,@PathVariable("user-id") int id ){
 
         return postinterface.addPost(post, id);
@@ -37,10 +37,15 @@ public class postController {
         return postinterface.getPost(id,userId,friendId);   //friendId
     }
 
-    @GetMapping("getPosts")
-    public List<Post> getPosts(@RequestParam("user-id")
-    int userId) throws GeneralException {
-        return postinterface.getPosts(userId);  //friendId
+    @GetMapping("posts/{user-id}")
+    public GeneralResponse<List<Post>> getPosts(@PathVariable("user-id") int id)
+    throws GeneralException {
+
+        GeneralResponse<List<Post>> res = new GeneralResponse<>();
+        res.setData(postinterface.posts(id));
+        res.setSuccess(true);
+//        res.
+        return res;  //friendId
     }
 
 
@@ -61,6 +66,18 @@ public class postController {
                                    @RequestParam("friend-id") Integer friendId) throws GeneralException {
         return new ResponseEntity<>(postinterface.getPosts(userId,friendId), HttpStatus.OK);
     }
+
+    @GetMapping("all-post/{user-id}")
+    public GeneralResponse<List<Post> > getAllPost(@PathVariable("user-id") int id ) throws GeneralException {
+        List<Post> posts = postinterface.getAllPosts(id);
+        GeneralResponse<List<Post> > res = new GeneralResponse<>();
+        res.setSuccess(true);
+        res.setData(posts);
+        return res;
+    }
+
+
+   
 
 
 
