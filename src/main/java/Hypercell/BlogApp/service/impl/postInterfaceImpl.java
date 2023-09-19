@@ -11,6 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.io.Console;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Service
@@ -168,5 +174,40 @@ public class postInterfaceImpl implements postInterface {
 
 
 
+    public String uploadPicture(String image, int postId) throws IOException {
+        Path path = Paths.get(String.format("Hypercell/Uploads/Post/%s", postId));
+        Files.createDirectories(path);
+        path = Paths.get(String.format("%s/%s.txt", path, postId));
+        if (Files.notExists(path))
+            Files.createFile(path);
+        try (FileOutputStream fos = new FileOutputStream(path.toAbsolutePath().toString())) {
+            fos.write(image.getBytes());
+        } catch (Exception ex) {
+            System.out.println("Image cannot be uploaded");
+        }
+        String imagePath=path.toAbsolutePath().toString();
+        Post post=postRepository.findById(postId).orElseThrow();
+        post.setImage_url(imagePath);
+        postRepository.saveAndFlush(post);
+        System.out.println(post.getImage_url());
+        return imagePath;
+
+    }
+
+    @Override
+    public boolean deletePicture(int postId) throws IOException {
+        Post post=postRepository.findById(postId).orElseThrow();
+        Path path = Paths.get(String.format("Hypercell/Uploads/Post/%s", postId));
+        Files.createDirectories(path);
+        path = Paths.get(String.format("%s/%s.txt", path, postId));
+        if(Files.deleteIfExists(path)){
+            post.setImage_url(null);
+            postRepository.saveAndFlush(post);
+            return true;
+        }
+        return false;
+
+
+    }
 }
 

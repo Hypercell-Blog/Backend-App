@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import javax.imageio.IIOException;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,6 +74,36 @@ public class UserController {
     @PutMapping("check-friend")
     public boolean checkFriend(@RequestParam("userId") int id,@RequestParam("friendId") int friendId) throws GeneralException {
         return userService.isFriend(id,friendId);
+    }
+
+    @PostMapping("/upload-image")
+    public String uploadImage(@RequestParam("image") String image, @RequestParam("userId") Integer userId){
+        String imagePath;
+        try{
+            imagePath=userService.uploadPicture(image,userId);
+            return imagePath;
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+
+
+
+    }
+
+    @DeleteMapping("delete-image/{userId}")
+    public boolean deleteImage(@PathVariable("userId") Integer userId){
+        boolean isDeleted=false;
+        try{
+            isDeleted=userService.deletePicture(userId);
+            return isDeleted;
+        }
+        catch(Exception exception){
+            exception.printStackTrace();
+            return isDeleted;
+        }
+
     }
 
 

@@ -34,6 +34,7 @@ public class Post {
     @JoinColumn(name="shared_id")
     @OneToOne(cascade = CascadeType.ALL)
     private Post shared_post;
+
     @Transient
     private String user_name;
 
