@@ -283,9 +283,9 @@ public class postInterfaceImpl implements postInterface {
         }
         String imagePath=path.toAbsolutePath().toString();
         Post post=postRepository.findById(postId).orElseThrow();
-        post.setImage_url(imagePath);
+        post.setImage(imagePath);
         postRepository.saveAndFlush(post);
-        System.out.println(post.getImage_url());
+        System.out.println(post.getImage());
         return imagePath;
 
     }
@@ -297,7 +297,7 @@ public class postInterfaceImpl implements postInterface {
         Files.createDirectories(path);
         path = Paths.get(String.format("%s/%s.txt", path, postId));
         if(Files.deleteIfExists(path)){
-            post.setImage_url(null);
+            post.setImage(null);
             postRepository.saveAndFlush(post);
             return true;
         }

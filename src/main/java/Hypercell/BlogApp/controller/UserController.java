@@ -3,11 +3,13 @@ package Hypercell.BlogApp.controller;
 import Hypercell.BlogApp.exceptions.GeneralException;
 import Hypercell.BlogApp.model.Credentials;
 import Hypercell.BlogApp.model.User;
+import Hypercell.BlogApp.model.requests.ProfileImage;
 import Hypercell.BlogApp.model.response.body.LoginResponse;
 import Hypercell.BlogApp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import javax.imageio.IIOException;
@@ -77,10 +79,10 @@ public class UserController {
     }
 
     @PostMapping("/upload-image")
-    public String uploadImage(@RequestParam("image") String image, @RequestParam("userId") Integer userId){
+    public String uploadImage(@RequestBody ProfileImage image, @RequestParam("userId") Integer userId){
         String imagePath;
         try{
-            imagePath=userService.uploadPicture(image,userId);
+            imagePath=userService.uploadPicture(image.getImage(),userId);
             return imagePath;
         }
         catch(Exception e){

@@ -43,7 +43,28 @@ public class UserServiceImpl implements UserService{
         {
             throw new GeneralException("1", "User Not Found");
         }
-       return Optional.of(userRepository.findById(id).orElseThrow());
+        User user = userRepository.findById(id).orElseThrow();
+
+         user.setPic(getImage(user));
+       return Optional.of(user);
+    }
+
+    String getImage(User user){
+        Path path = Paths.get(user.getPic());
+        File file=new File(path.toAbsolutePath().toString());
+        String base64Image="";
+        try {
+            Scanner myReader = new Scanner(file);
+            while (myReader.hasNextLine()) {
+                base64Image += myReader.nextLine();
+
+            }
+            myReader.close();
+        } catch (Exception e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+        return base64Image;
     }
 
     @Override

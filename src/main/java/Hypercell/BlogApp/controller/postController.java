@@ -47,12 +47,11 @@ public class postController {
     public GeneralResponse<List<Post>> getPosts(@PathVariable("user-id") int userId, @PathVariable("friend-id") int friendId
     ) throws GeneralException {
 
-
             GeneralResponse<List<Post>> res = new GeneralResponse<>();
             res.setData(postinterface.getPosts(userId, friendId));
             res.setSuccess(true);
-//        res.
-            return res;  //friendId
+
+            return res;
     }
 
 //    @GetMapping("get/{post-id}")
