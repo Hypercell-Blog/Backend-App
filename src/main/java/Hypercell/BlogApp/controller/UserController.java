@@ -79,16 +79,19 @@ public class UserController {
     }
 
     @PostMapping("/upload-image")
-    public String uploadImage(@RequestBody ProfileImage image, @RequestParam("userId") Integer userId){
-        String imagePath;
+    public Object uploadImage(@RequestBody ProfileImage image, @RequestParam("userId") Integer userId){
+        String res;
+        ProfileImage resBody = new ProfileImage();
+
         try{
-            imagePath=userService.uploadPicture(image.getImage(),userId);
-            return imagePath;
+            res=userService.uploadPicture(image.getImage(),userId);
+             resBody.setImage(res);
         }
         catch(Exception e){
             e.printStackTrace();
             return null;
         }
+        return  resBody;
 
 
 

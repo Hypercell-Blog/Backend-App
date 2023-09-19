@@ -32,13 +32,13 @@ public class Reactions {
 
     @JsonIgnore
     @Id
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.REMOVE, optional = false)
     @JoinColumn(name="user_id")
     private User user;
 
     @JsonIgnore
     @Id
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn (name="post_id")
     private Post post;
 

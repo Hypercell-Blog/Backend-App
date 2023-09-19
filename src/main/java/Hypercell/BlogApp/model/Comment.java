@@ -30,11 +30,11 @@ public class Comment {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private String commentDate;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name="post_id")
     private Post post;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name="user_id")
     private User user;
 

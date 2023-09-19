@@ -45,6 +45,7 @@ public class UserServiceImpl implements UserService{
         }
         User user = userRepository.findById(id).orElseThrow();
 
+        if(user.getPic() != null)
          user.setPic(getImage(user));
        return Optional.of(user);
     }
@@ -183,7 +184,7 @@ if(!userRepository.existsById(id))
         user.setPic(imagePath);
         userRepository.saveAndFlush(user);
         System.out.println(user.getPic());
-        return imagePath;
+        return image;
     }
 
     @Override

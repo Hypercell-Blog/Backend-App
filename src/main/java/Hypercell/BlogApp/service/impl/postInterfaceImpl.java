@@ -10,6 +10,7 @@ import Hypercell.BlogApp.service.postInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.io.Console;
 import java.io.FileOutputStream;
@@ -19,6 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.Scanner;
 
 @Service
 public class postInterfaceImpl implements postInterface {
@@ -45,6 +47,7 @@ public class postInterfaceImpl implements postInterface {
     @Override
     public Post addPost(Post post, Integer id) {
         User user = userRepository.findById(id).orElseThrow();
+        post.setImage("");
 
         // here if the post is shared post we will get the original post and set it to the shared post
         if(post.getSharedPostId() != null) {
@@ -87,12 +90,48 @@ public class postInterfaceImpl implements postInterface {
 
             List<Post> posts = postRepository.findAllByShared_post(id);
             postRepository.deleteAll(posts);
+
             postRepository.deleteById(id);
             return true ;
 
         }
     }
-//hello
+
+    String getImage(Post post){
+        Path path = Paths.get(post.getImage());
+        File file = new File(path.toAbsolutePath().toString());
+        String base64Image="";
+        try {
+            Scanner myReader = new Scanner(file);
+            while (myReader.hasNextLine()) {
+                base64Image += myReader.nextLine();
+            }
+            myReader.close();
+        } catch (Exception e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+        return base64Image;
+    }
+
+    String getImage(User user){
+        Path path = Paths.get(user.getPic());
+        File file = new File(path.toAbsolutePath().toString());
+        String base64Image="";
+        try {
+            Scanner myReader = new Scanner(file);
+            while (myReader.hasNextLine()) {
+                base64Image += myReader.nextLine();
+            }
+            myReader.close();
+        } catch (Exception e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+        return base64Image;
+    }
+
+
     @Override
     public Post getPost(int id,int userId,int friendId) throws GeneralException {
         Post post = postRepository.findById(id).orElseThrow();
@@ -158,9 +197,14 @@ public class postInterfaceImpl implements postInterface {
 //                return finalPost;
 //    }
 
+
     @Override
     public Post getPost(int id) {
-        return postRepository.findById(id).orElseThrow();
+        Post post = postRepository.findById(id).orElseThrow();
+        if(post.getImage() != null){
+            post.setImage(getImage(post));
+        }
+        return post;
     }
 
     @Override
@@ -171,10 +215,19 @@ public class postInterfaceImpl implements postInterface {
         }
        List<Post> posts= postRepository.findByUserId(friendId);
         for (Post post : posts) {
-
+            if(post.getImage() != null){
+                System.out.println("here image");
+                System.out.println(post.getImage());
+                post.setImage(getImage(post));
+            }
             if(post.getUser() == null){
                 continue;
             }
+//            if(post.getUser().getPic() != null){
+//                post.getUser().setPic(getImage(post.getUser()));
+//            }
+
+
             List<Reactions> rec = reactionsRepository.findAllByPost(post);
             Optional<User> user = userRepository.findById(userId);
             User crntUser = user.get();
@@ -197,9 +250,18 @@ public class postInterfaceImpl implements postInterface {
 
         List<Post> posts = postRepository.findAll();
         for(Post post: posts){
+
+            if(post.getImage() != null){
+                post.setImage(getImage(post));
+            }
+
             if(post.getUser() == null){
                 continue;
             }
+//            if(post.getUser().getPic() != null){
+//                post.getUser().setPic(getImage(post.getUser()));
+//            }
+
             List<Reactions> rec = reactionsRepository.findAllByPost(post);
             Optional<User> user = userRepository.findById(id);
             User crntUser = user.get();
@@ -216,6 +278,55 @@ public class postInterfaceImpl implements postInterface {
 
         }
         return posts;
+
+
+
+
+
+    }
+
+
+    public String uploadPicture(String image, int postId) throws IOException {
+        Path path = Paths.get(String.format("Hypercell/Uploads/Post/%s", postId));
+        Files.createDirectories(path);
+        path = Paths.get(String.format("%s/%s.txt", path, postId));
+        if (Files.notExists(path))
+            Files.createFile(path);
+        try (FileOutputStream fos = new FileOutputStream(path.toAbsolutePath().toString())) {
+            fos.write(image.getBytes());
+        } catch (Exception ex) {
+            System.out.println("Image cannot be uploaded");
+        }
+        String imagePath=path.toAbsolutePath().toString();
+        Post post=postRepository.findById(postId).orElseThrow();
+        post.setImage(imagePath);
+        System.out.println("here the path");
+        System.out.println(imagePath);
+        postRepository.saveAndFlush(post);
+        System.out.println(post.getImage());
+        return imagePath;
+
+    }
+
+
+
+    @Override
+    public boolean deletePicture(int postId) throws IOException {
+        Post post=postRepository.findById(postId).orElseThrow();
+        Path path = Paths.get(String.format("Hypercell/Uploads/Post/%s", postId));
+        Files.createDirectories(path);
+        path = Paths.get(String.format("%s/%s.txt", path, postId));
+        if(Files.deleteIfExists(path)){
+            post.setImage(null);
+            postRepository.saveAndFlush(post);
+            return true;
+        }
+        return false;
+
+
+    }
+}
+
 
 
 
@@ -266,44 +377,4 @@ public class postInterfaceImpl implements postInterface {
 //
 //        }
 //        return posts;
-
-    }
-
-
-    public String uploadPicture(String image, int postId) throws IOException {
-        Path path = Paths.get(String.format("Hypercell/Uploads/Post/%s", postId));
-        Files.createDirectories(path);
-        path = Paths.get(String.format("%s/%s.txt", path, postId));
-        if (Files.notExists(path))
-            Files.createFile(path);
-        try (FileOutputStream fos = new FileOutputStream(path.toAbsolutePath().toString())) {
-            fos.write(image.getBytes());
-        } catch (Exception ex) {
-            System.out.println("Image cannot be uploaded");
-        }
-        String imagePath=path.toAbsolutePath().toString();
-        Post post=postRepository.findById(postId).orElseThrow();
-        post.setImage(imagePath);
-        postRepository.saveAndFlush(post);
-        System.out.println(post.getImage());
-        return imagePath;
-
-    }
-
-    @Override
-    public boolean deletePicture(int postId) throws IOException {
-        Post post=postRepository.findById(postId).orElseThrow();
-        Path path = Paths.get(String.format("Hypercell/Uploads/Post/%s", postId));
-        Files.createDirectories(path);
-        path = Paths.get(String.format("%s/%s.txt", path, postId));
-        if(Files.deleteIfExists(path)){
-            post.setImage(null);
-            postRepository.saveAndFlush(post);
-            return true;
-        }
-        return false;
-
-
-    }
-}
 

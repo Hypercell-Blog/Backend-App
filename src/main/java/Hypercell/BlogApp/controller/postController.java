@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -19,10 +20,19 @@ public class postController {
         this.postinterface=postinterface;
     }
 
-    @PostMapping("add-post{user-id}")
-    public Post addPost(@RequestBody Post post,@PathVariable("user-id") int id ){
+    @DeleteMapping("delete-post")
+    public boolean deletePost(@RequestParam("post-id") int id) throws GeneralException {
+        return postinterface.deletePost(id);
+    }
 
-        return postinterface.addPost(post, id);
+    @PostMapping("add-post/{user-id}")
+    public Post addPost(@RequestBody Post post,@PathVariable("user-id") int id ) throws IOException {
+        String image = post.getImage();
+        post.setImage("");
+        Post res = postinterface.addPost(post,id);
+        res.setImage(postinterface.uploadPicture(image,post.getId()));
+
+        return res;
     }
 
     @PutMapping("update/{post-id}/{user-id}")
@@ -51,14 +61,15 @@ public class postController {
             res.setData(postinterface.getPosts(userId, friendId));
             res.setSuccess(true);
 
+
             return res;
     }
 
-//    @GetMapping("get/{post-id}")
-//    public Post getPost(@PathVariable("post-id") int id){
-//
-//        return postinterface.getPost(id);
-//    }
+    @GetMapping("getPost/{post-id}")
+    public Post getPost(@PathVariable("post-id") int id){
+
+        return postinterface.getPost(id);
+    }
 
 
     @DeleteMapping("delete-post/{post-id}/{user-id}")
@@ -79,7 +90,7 @@ public class postController {
 //        return new ResponseEntity<>(postinterface.getPosts(userId,friendId), HttpStatus.OK);
 //    }
 
-    @GetMapping("all-post/{user-id}")
+    @GetMapping("all-posts/{user-id}")
     public GeneralResponse<List<Post> > getAllPost(@PathVariable("user-id") int id ) throws GeneralException {
         List<Post> posts = postinterface.getAllPosts(id);
         GeneralResponse<List<Post> > res = new GeneralResponse<>();
@@ -127,5 +138,8 @@ public class postController {
         }
 
     }
+
+
+//    @GetMapping("get/{post-id}")
 
 }
