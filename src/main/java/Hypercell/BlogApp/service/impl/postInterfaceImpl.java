@@ -45,7 +45,9 @@ public class postInterfaceImpl implements postInterface {
 
     @Override
     public Post addPost(Post post, Integer id) {
+
         User user = userRepository.findById(id).orElseThrow();
+        System.out.println(post.getImage());
         post.setImage("");
 
         // here if the post is shared post we will get the original post and set it to the shared post
@@ -97,6 +99,8 @@ public class postInterfaceImpl implements postInterface {
     }
 
     String getImage(Post post){
+        System.out.println("here the path");
+        System.out.println(post.getImage());
         Path path = Paths.get(post.getImage());
         File file = new File(path.toAbsolutePath().toString());
         String base64Image="";
@@ -158,6 +162,7 @@ public class postInterfaceImpl implements postInterface {
        List<Post> posts= postRepository.findByUserId(friendId);
         for (Post post : posts) {
             if(post.getImage() != null){
+
                 post.setImage(getImage(post));
             }
             if(post.getUser().getPic() != null){
@@ -199,15 +204,18 @@ public class postInterfaceImpl implements postInterface {
         for(Post post: posts){
 
             if(post.getImage() != null){
-                if(userImages.get(post.getUser().getId()) == null){
-                    userImages.put(post.getUser().getId(),getImage(post.getUser()))  ;
-                }
-                post.setImage(userImages.get(post.getUser().getId()));
+             post.setImage(getImage(post));
             }
-            if(post.getUser().getPic() != null){
 
-                post.getUser().setPic(getImage(post.getUser()));
+            if(post.getUser().getPic() != null){
+                if(userImages.get(post.getUser().getId())!= null){
+                    userImages.put(post.getUser().getId(), getImage(post.getUser()));
+//                    post.getUser().setPic();
+                }
+
+                post.getUser().setPic(userImages.get(post.getUser().getId()));
             }
+
 
 //            if(post.getSharedPost() != null){
 //                if(post.getSharedPost().getImage() != null){
