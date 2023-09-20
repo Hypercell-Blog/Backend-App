@@ -6,7 +6,7 @@ This is a backend application developed using Spring Boot for a feature-rich blo
 
 Before running the application, ensure that you have the following prerequisites installed:
 
-- Java Development Kit (JDK) - Version 8 or higher
+- Java Development Kit (JDK) - Version 17 or higher
 - Spring Boot - Latest version
 - Maven - Latest version
 - Your preferred Integrated Development Environment (IDE) - IntelliJ IDEA, Eclipse, etc.
