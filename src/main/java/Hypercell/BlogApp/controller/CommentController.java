@@ -19,10 +19,10 @@ public class CommentController {
     }
 
 
-    @GetMapping("/get/{comment-id}")
-    public Comment getComment(@PathVariable("comment-id") Integer commentId) throws GeneralException {
-        return commentService.getComment(commentId);
-    }
+//    @GetMapping("/get/{comment-id}")
+//    public Comment getComment(@PathVariable("comment-id") Integer commentId) throws GeneralException {
+//        return commentService.getComment(commentId);
+//    }
 
     @GetMapping("/all-comment/{post-id}")
     public GeneralResponse<List<Comment>> getCommentByPost(@PathVariable("post-id") Integer postId) throws GeneralException {

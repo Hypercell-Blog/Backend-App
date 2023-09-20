@@ -63,10 +63,10 @@ public class postController {
             return res;
     }
 
-    @GetMapping("getPost/{post-id}")
-    public Post getPost(@PathVariable("post-id") int id){
+    @GetMapping("post-details/{post-id}")
+    public  GeneralResponse<Post> getPost(@PathVariable("post-id") int id){
 
-        return postinterface.getPost(id);
+        return new GeneralResponse<>(true,postinterface.getPost(id));
     }
 
 

@@ -36,7 +36,7 @@ public class UserController {
         return userService.validateUser(userCredential.getEmail(), userCredential.getPassword());
     }
 
-    @PutMapping("update/{id}")
+    @PutMapping("update-user/{id}")
     public Optional<User> updateUser(@RequestBody User user, @PathVariable("id") int id) {
         return userService.updateUser(user, id);
     }
@@ -52,7 +52,7 @@ public class UserController {
 
     }
 
-    @GetMapping("get/all")
+    @GetMapping("get-user/all")
     public List<User>  getUsers(){
         return userService.getUsers();
     }
@@ -64,7 +64,7 @@ public class UserController {
     }
 
     @GetMapping("get-friends/{userId}")
-    public List<User> getFriends(@PathVariable("userId") Integer userId){
+    public List<User> getFriends(@PathVariable("userId") Integer userId) throws GeneralException {
         return userService.getFriends(userId);
     }
 
@@ -78,8 +78,8 @@ public class UserController {
         return userService.isFriend(id,friendId);
     }
 
-    @PostMapping("/upload-image")
-    public Object uploadImage(@RequestBody ProfileImage image, @RequestParam("userId") Integer userId){
+    @PostMapping("/upload-image/{userId}")
+    public Object uploadImage(@RequestBody ProfileImage image, @PathVariable("userId") Integer userId){
         String res;
         ProfileImage resBody = new ProfileImage();
 
@@ -88,8 +88,7 @@ public class UserController {
              resBody.setImage(res);
         }
         catch(Exception e){
-            e.printStackTrace();
-            return null;
+            new GeneralException("1","Error in uploading image");
         }
         return  resBody;
 

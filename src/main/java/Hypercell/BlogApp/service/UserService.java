@@ -24,7 +24,7 @@ public interface UserService {
 
     User addFriend(Integer friendId,Integer userId) throws GeneralException; //add friend to the user with id=userId
 
-    List<User> getFriends(Integer userId); //get friends of user with id=userId
+    List<User> getFriends(Integer userId) throws GeneralException; //get friends of user with id=userId
 
     boolean deleteFriend(Integer friendId,Integer userId); //delete the friend with friendId from user with userId
 

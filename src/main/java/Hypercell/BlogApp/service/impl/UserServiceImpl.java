@@ -28,13 +28,18 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public Optional<User> addUser(User user) throws GeneralException {
-
+    String password = user.getPassword();
         if(userRepository.findByEmail(user.getEmail()) != null)
             throw new GeneralException("1", "Email Already Exists");
+//        if(user.getPassword().length() <= 8 ){
+//            throw new GeneralException("2", "Password must be more than 8 characters");
+//        }
         String hashedPassword = hashing(user.getPassword());
         user.setPassword(hashedPassword);
+        User res  = userRepository.save(user);
+        res.setPassword(password);
 
-        return Optional.of(userRepository.save(user));
+        return Optional.of(res);
     }
 
     @Override
@@ -51,6 +56,12 @@ public class UserServiceImpl implements UserService{
     }
 
     String getImage(User user){
+        if (user.getPic() == null)
+            return null;
+
+        if(user.getPic().equals("../../../../assets/images/defaultProfile.jpg")){
+            return user.getPic();
+        }
         Path path = Paths.get(user.getPic());
         File file=new File(path.toAbsolutePath().toString());
         String base64Image="";
@@ -70,13 +81,21 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public Optional<User> updateUser(User user, int id) {
-if(!userRepository.existsById(id))
-            return Optional.empty();
-    User crnt = userRepository.findById(id).orElseThrow();
-        user.setId(id);
-        user.setFriends(crnt.getFriends());
 
-        return Optional.of(userRepository.saveAndFlush(user));
+
+        if(!userRepository.existsById(id))
+                return Optional.empty();
+//        user.setPassword(hashing(user.getPassword()));
+        User crnt = userRepository.findById(id).orElseThrow();
+        user.setEmail(crnt.getEmail());
+            user.setId(id);
+            user.setFriends(crnt.getFriends());
+            user.setPassword(crnt.getPassword());
+            user.setPic(crnt.getPic());
+
+            User res = userRepository.saveAndFlush(user);
+            res.setPic(getImage(res));
+        return Optional.of(res);
     }
 
     @Override
@@ -97,7 +116,12 @@ if(!userRepository.existsById(id))
     @Override
     public LoginResponse validateUser(String email , String password) throws GeneralException{
         User user = userRepository.findByEmail(email);
+
+        System.out.println(email);
+        System.out.println(password);
+
         password = hashing(password);
+        System.out.println(password);
 
         if(user == null ){
             throw new GeneralException("1", "User Not Found");
@@ -138,9 +162,15 @@ if(!userRepository.existsById(id))
 
 
     @Override
-    public List<User> getFriends(Integer userId) {
+    public List<User> getFriends(Integer userId) throws GeneralException {
+        if(!userRepository.existsById(userId))
+            throw new GeneralException("1", "User Not Found");
         User user=userRepository.findById(userId).orElseThrow();
-        return user.getFriends();
+        List<User> friends=user.getFriends();
+        for (User friend:friends) {
+            friend.setPic(getImage(friend));
+        }
+        return friends;
     }
 
     @Override

@@ -114,6 +114,9 @@ public class postInterfaceImpl implements postInterface {
     }
 
     String getImage(User user){
+        if(user.getPic()== null){
+            return null;
+        }
         Path path = Paths.get(user.getPic());
         File file = new File(path.toAbsolutePath().toString());
         String base64Image="";
@@ -138,6 +141,10 @@ public class postInterfaceImpl implements postInterface {
         if(post.getImage() != null){
             post.setImage(getImage(post));
         }
+        if(post.getUser().getPic() != null){
+
+            post.getUser().setPic(getImage(post.getUser()));
+        }
         return post;
     }
 
@@ -153,15 +160,11 @@ public class postInterfaceImpl implements postInterface {
             if(post.getImage() != null){
                 post.setImage(getImage(post));
             }
-            if(post.getImage() != null){
+            if(post.getUser().getPic() != null){
                 if(userImages.get(post.getUser().getId()) == null){
                     userImages.put(post.getUser().getId(),getImage(post.getUser()))  ;
                 }
-                post.setImage(userImages.get(post.getUser().getId()));
-            }
-            if(post.getUser().getPic() != null){
-
-                post.getUser().setPic(getImage(post.getUser()));
+                post.getUser().setPic(userImages.get(post.getUser().getId()));
             }
 
 
