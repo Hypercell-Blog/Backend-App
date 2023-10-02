@@ -44,7 +44,7 @@ public class postInterfaceImpl implements postInterface {
 
 
     @Override
-    public Post addPost(Post post, Integer id) {
+    public Post addPost(Post post, Integer id) throws GeneralException {
 
         User user = userRepository.findById(id).orElseThrow();
         System.out.println(post.getImage());
@@ -52,11 +52,20 @@ public class postInterfaceImpl implements postInterface {
 
         // here if the post is shared post we will get the original post and set it to the shared post
         if(post.getSharedPostId() != null) {
+            List<Post> posts = postRepository.findAllByShared_post(post.getSharedPostId());
+
             Post shared_post = postRepository.findById(post.getSharedPostId()).orElseThrow();
             if (shared_post.getSharedPost() != null) {
                 shared_post = shared_post.getSharedPost();
                 System.out.println("shared post is not null");
             }
+            for(Post p : posts){
+                if(p.getSharedPost() == shared_post && p.getUser() == user) {
+                   throw new GeneralException("1", "Post is already shared by the same user");
+
+                }
+            }
+
             post.setSharedPost(shared_post);
         }
         if(post.getCreateAt() == null){

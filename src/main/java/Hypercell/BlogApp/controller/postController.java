@@ -24,7 +24,7 @@ public class postController {
     }
 
     @PostMapping("add-post/{user-id}")
-    public Post addPost(@RequestBody Post post,@PathVariable("user-id") int id ) throws IOException {
+    public Post addPost(@RequestBody Post post,@PathVariable("user-id") int id ) throws IOException, GeneralException {
         System.out.println(post.getImage());
         String image = post.getImage();
         post.setImage("");
