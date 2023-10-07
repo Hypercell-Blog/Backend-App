@@ -176,7 +176,7 @@ public class postInterfaceImpl implements postInterface {
                 throw new GeneralException("1","User Not Found");
 
 
-            if (post.getPrivacy() == PrivacyEnum.PUBLIC || post.getUser().getId() == userId){
+            if (post.getPrivacy() == PrivacyEnum.PUBLIC ){
 
                 finalPost.add(post);
             } else if (post.getPrivacy() == PrivacyEnum.FRIENDS) {//get the user with this userId
@@ -237,7 +237,7 @@ public class postInterfaceImpl implements postInterface {
 
                 finalPost.add(post);
             } else if (post.getPrivacy() == PrivacyEnum.FRIENDS) {//get the user with this userId
-                if(friend.getFriends().contains(userRepository.findById(id).orElseThrow())){
+                if(post.getUser().getFriends().contains(userRepository.findById(id).orElseThrow())){
                     finalPost.add(post);
                 }
 
@@ -284,9 +284,6 @@ public class postInterfaceImpl implements postInterface {
             post.setNumberOfReacts(rec.size());
             List<Comment> comments = commentRepository.findByPost(post);
             post.setNumberOfComments(comments.size());
-
-
-
         }
         return posts;
 
