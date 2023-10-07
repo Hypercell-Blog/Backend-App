@@ -168,7 +168,7 @@ public class postInterfaceImpl implements postInterface {
             throw new GeneralException("1","User is not found");
         }
         Map<Integer, String> userImages  = new HashMap<>();
-                List<Post> result = postRepository.findByUserId(userId);
+                List<Post> result = postRepository.findByUserId(friendId);
         List<Post> finalPost=new ArrayList<>();
         for (Post post : result) {
             User friend = userRepository.findById(friendId).orElse(null); //get the friend with this friendId
