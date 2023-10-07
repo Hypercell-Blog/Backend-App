@@ -227,7 +227,7 @@ public class postInterfaceImpl implements postInterface {
             throw new GeneralException("1","User is not found");
         }
         Map<Integer, String> userImages  = new HashMap<>();
-        User friend = userRepository.findById(id).orElse(null); //get the friend with this user
+        User user = userRepository.findById(id).orElse(null); //get the friend with this user
 
 
         List<Post> posts = postRepository.findAll();
@@ -237,7 +237,7 @@ public class postInterfaceImpl implements postInterface {
 
                 finalPost.add(post);
             } else if (post.getPrivacy() == PrivacyEnum.FRIENDS) {//get the user with this userId
-                if(post.getUser().getFriends().contains(userRepository.findById(id).orElseThrow())){
+                if(post.getUser().getFriends().contains(user)){
                     finalPost.add(post);
                 }
 
@@ -249,7 +249,7 @@ public class postInterfaceImpl implements postInterface {
 
 
 
-        for(Post post: posts){
+        for(Post post: finalPost){
 
             if(post.getImage() != null){
              post.setImage(getImage(post));
@@ -272,11 +272,11 @@ public class postInterfaceImpl implements postInterface {
 //            }
 
             List<Reactions> rec = reactionsRepository.findAllByPost(post);
-            Optional<User> user = userRepository.findById(id);
-            User crntUser = user.get();
+//            Optional<User> user = userRepository.findById(id);
+//            User crntUser = user.get();
 
-            if(reactionsRepository.findById(new Reactions.CompositeKey(crntUser, post)).isPresent()){
-                Optional<Reactions> reaction = reactionsRepository.findById(new Reactions.CompositeKey(crntUser, post));
+            if(reactionsRepository.findById(new Reactions.CompositeKey(user, post)).isPresent()){
+                Optional<Reactions> reaction = reactionsRepository.findById(new Reactions.CompositeKey(user, post));
 
                 post.setIsReact(reaction.get().getType().ordinal());
             }
@@ -285,7 +285,7 @@ public class postInterfaceImpl implements postInterface {
             List<Comment> comments = commentRepository.findByPost(post);
             post.setNumberOfComments(comments.size());
         }
-        return posts;
+        return finalPost;
 
 
 
