@@ -254,15 +254,13 @@ public class postInterfaceImpl implements postInterface {
             if(post.getImage() != null){
              post.setImage(getImage(post));
             }
-
             if(post.getUser().getPic() != null){
-                if(userImages.get(post.getUser().getId())!= null){
-                    userImages.put(post.getUser().getId(), getImage(post.getUser()));
-//                    post.getUser().setPic();
+                if(userImages.get(post.getUser().getId()) == null){
+                    userImages.put(post.getUser().getId(),getImage(post.getUser()))  ;
                 }
-
                 post.getUser().setPic(userImages.get(post.getUser().getId()));
             }
+
 
 
 //            if(post.getSharedPost() != null){
