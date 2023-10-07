@@ -168,10 +168,30 @@ public class postInterfaceImpl implements postInterface {
             throw new GeneralException("1","User is not found");
         }
         Map<Integer, String> userImages  = new HashMap<>();
-       List<Post> posts= postRepository.findByUserId(friendId);
-        for (Post post : posts) {
-            if(post.getImage() != null){
+                List<Post> result = postRepository.findByUserId(userId);
+        List<Post> finalPost=new ArrayList<>();
+        for (Post post : result) {
+            User friend = userRepository.findById(friendId).orElse(null); //get the friend with this friendId
+            if (friend == null)
+                throw new GeneralException("1","User Not Found");
 
+
+            if (post.getPrivacy() == PrivacyEnum.PUBLIC || post.getUser().getId() == userId){
+
+                finalPost.add(post);
+            } else if (post.getPrivacy() == PrivacyEnum.FRIENDS) {//get the user with this userId
+                if(friend.getFriends().contains(userRepository.findById(userId).orElseThrow())){
+                    finalPost.add(post);
+                }
+
+
+            } else if (post.getPrivacy() == PrivacyEnum.ONLYME) {
+                continue;
+            }
+        }
+
+        for (Post post : finalPost) {
+            if(post.getImage() != null){
                 post.setImage(getImage(post));
             }
             if(post.getUser().getPic() != null){
@@ -197,7 +217,7 @@ public class postInterfaceImpl implements postInterface {
 
 
         }
-        return posts;
+        return finalPost;
     }
 
 
@@ -207,9 +227,28 @@ public class postInterfaceImpl implements postInterface {
             throw new GeneralException("1","User is not found");
         }
         Map<Integer, String> userImages  = new HashMap<>();
+        User friend = userRepository.findById(id).orElse(null); //get the friend with this user
 
 
         List<Post> posts = postRepository.findAll();
+        List<Post> finalPost=new ArrayList<>();
+        for (Post post : posts) {
+            if (post.getPrivacy() == PrivacyEnum.PUBLIC || post.getUser().getId() == id) {
+
+                finalPost.add(post);
+            } else if (post.getPrivacy() == PrivacyEnum.FRIENDS) {//get the user with this userId
+                if(friend.getFriends().contains(userRepository.findById(id).orElseThrow())){
+                    finalPost.add(post);
+                }
+
+
+            } else if (post.getPrivacy() == PrivacyEnum.ONLYME) {
+                continue;
+            }
+        }
+
+
+
         for(Post post: posts){
 
             if(post.getImage() != null){
