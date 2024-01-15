@@ -45,7 +45,7 @@ public class User {
     String bio;
 
     @JsonIgnore
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.REMOVE)
     @JoinTable(name = "friends",joinColumns = @JoinColumn(name = "user_id"),inverseJoinColumns = @JoinColumn(name = "friend_id"))
     @JsonSerialize(using = CustomUserSerializer.class)
     private List<User> friends;

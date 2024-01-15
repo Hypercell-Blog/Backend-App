@@ -3,11 +3,13 @@ package Hypercell.BlogApp.controller;
 import Hypercell.BlogApp.exceptions.GeneralException;
 import Hypercell.BlogApp.model.Credentials;
 import Hypercell.BlogApp.model.User;
+import Hypercell.BlogApp.model.requests.ProfileImage;
 import Hypercell.BlogApp.model.response.body.LoginResponse;
 import Hypercell.BlogApp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import javax.imageio.IIOException;
@@ -34,7 +36,7 @@ public class UserController {
         return userService.validateUser(userCredential.getEmail(), userCredential.getPassword());
     }
 
-    @PutMapping("update/{id}")
+    @PutMapping("update-user/{id}")
     public Optional<User> updateUser(@RequestBody User user, @PathVariable("id") int id) {
         return userService.updateUser(user, id);
     }
@@ -46,11 +48,11 @@ public class UserController {
 
     @GetMapping("get-user/{id}")
     public User getUser(@PathVariable ("id") int id) throws GeneralException {
-        return  userService.getUser(id).orElse(null);
+        return  userService.getUser(id);
 
     }
 
-    @GetMapping("get/all")
+    @GetMapping("get-user/all")
     public List<User>  getUsers(){
         return userService.getUsers();
     }
@@ -62,7 +64,7 @@ public class UserController {
     }
 
     @GetMapping("get-friends/{userId}")
-    public List<User> getFriends(@PathVariable("userId") Integer userId){
+    public List<User> getFriends(@PathVariable("userId") Integer userId) throws GeneralException {
         return userService.getFriends(userId);
     }
 
@@ -76,17 +78,19 @@ public class UserController {
         return userService.isFriend(id,friendId);
     }
 
-    @PostMapping("/upload-image")
-    public String uploadImage(@RequestParam("image") String image, @RequestParam("userId") Integer userId){
-        String imagePath;
+    @PostMapping("/upload-image/{userId}")
+    public Object uploadImage(@RequestBody ProfileImage image, @PathVariable("userId") Integer userId){
+        String res;
+        ProfileImage resBody = new ProfileImage();
+
         try{
-            imagePath=userService.uploadPicture(image,userId);
-            return imagePath;
+            res=userService.uploadPicture(image.getImage(),userId);
+             resBody.setImage(res);
         }
         catch(Exception e){
-            e.printStackTrace();
-            return null;
+            new GeneralException("1","Error in uploading image");
         }
+        return  resBody;
 
 
 

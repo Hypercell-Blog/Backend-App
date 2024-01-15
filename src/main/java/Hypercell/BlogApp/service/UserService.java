@@ -15,7 +15,7 @@ import java.util.Optional;
 
 public interface UserService {
     Optional<User> addUser(User user) throws GeneralException, NoSuchAlgorithmException, InvalidKeySpecException;
-    Optional<User> getUser(int id) throws GeneralException;
+    User getUser(int id) throws GeneralException;
     Optional<User> updateUser(User user, int id);
     boolean deleteUser(int id);
     List<User> getUsers();
@@ -24,7 +24,7 @@ public interface UserService {
 
     User addFriend(Integer friendId,Integer userId) throws GeneralException; //add friend to the user with id=userId
 
-    List<User> getFriends(Integer userId); //get friends of user with id=userId
+    List<User> getFriends(Integer userId) throws GeneralException; //get friends of user with id=userId
 
     boolean deleteFriend(Integer friendId,Integer userId); //delete the friend with friendId from user with userId
 

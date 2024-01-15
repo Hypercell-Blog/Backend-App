@@ -30,11 +30,11 @@ public class Comment {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private String commentDate;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name="post_id")
     private Post post;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name="user_id")
     private User user;
 
@@ -43,6 +43,8 @@ public class Comment {
 
     @Transient
     private int userId;
+
+    // return the whole user object
 
 
 
